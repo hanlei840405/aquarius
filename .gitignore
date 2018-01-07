@@ -26,3 +26,7 @@ aquarius\.iml
 mvnw
 
 mvnw\.cmd
+
+\.idea/
+
+target/
