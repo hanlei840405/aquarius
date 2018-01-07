@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.galaxy.framework.aquarius.mapper.UserMapper">
+
+    <select id="findByPosition" parameterType="string" resultType="com.galaxy.framework.aquarius.entity.Resource">
+        SELECT t1.* FROM sys_resource t1
+        INNER JOIN sys_resource_position t2 ON t1.resource_code=t2.resource_code
+        WHERE t2.position_code=#{positionCode}
+    </select>
+</mapper>

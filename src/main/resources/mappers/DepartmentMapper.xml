@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.galaxy.framework.aquarius.mapper.DepartmentMapper">
+    <select id="selectByFullPath" resultType="com.galaxy.framework.aquarius.entity.Department" parameterType="string">
+        SELECT * FROM sys_department WHERE full_path LIKE CONCAT(#{fullPath}, '%')
+    </select>
+
+    <select id="selectAllByStatus" resultType="com.galaxy.framework.aquarius.entity.Department" parameterType="string">
+        SELECT * FROM sys_department WHERE status=#{status}
+    </select>
+
+    <select id="selectByCode" resultType="com.galaxy.framework.aquarius.entity.Department" parameterType="string">
+        SELECT * FROM sys_department WHERE code=#{code} AND status='启用'
+    </select>
+</mapper>

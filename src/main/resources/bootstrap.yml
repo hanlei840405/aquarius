@@ -1,0 +1,23 @@
+spring:
+  cloud:
+    config:
+      name: aquarius
+      label: master
+      profile: dev
+      discovery:
+        enabled: true
+        service-id: config-server
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-zuul:8101/eureka/
+logging:
+  level:
+    com:
+      galaxy:
+        framework:
+          aquarius:
+            mapper: debug
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
