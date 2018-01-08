@@ -207,4 +207,9 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
     public List<Department> selectAllByStatus(String status) {
         return departmentMapper.selectAllByStatus(status);
     }
+
+    @Override
+    public List<Department> selectAllOrderByFullPath() {
+        return departmentMapper.selectAllOrderByFullPath();
+    }
 }

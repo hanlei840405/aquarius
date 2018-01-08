@@ -29,7 +29,7 @@ public class DepartmentController {
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping("/tree")
     public List<TreeVo> tree() throws IOException {
-        List<Department> departments = departmentService.selectAll();
+        List<Department> departments = departmentService.selectAllOrderByFullPath();
         List<TreeVo> treeVos = Lists.newArrayList();
         departments.forEach(department -> {
             TreeVo treeVo = new TreeVo();

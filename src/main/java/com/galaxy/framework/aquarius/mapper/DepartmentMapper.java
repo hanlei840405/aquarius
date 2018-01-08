@@ -12,4 +12,6 @@ public interface DepartmentMapper extends tk.mybatis.mapper.common.Mapper<Depart
     Department selectByCode(String code);
 
     List<Department> selectAllByStatus(String status);
+
+    List<Department> selectAllOrderByFullPath();
 }
