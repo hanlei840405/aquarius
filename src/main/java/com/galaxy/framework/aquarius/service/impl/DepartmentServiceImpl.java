@@ -2,8 +2,8 @@ package com.galaxy.framework.aquarius.service.impl;
 
 import com.galaxy.framework.aquarius.entity.Department;
 import com.galaxy.framework.aquarius.mapper.DepartmentMapper;
-import com.galaxy.framework.aquarius.service.CodeService;
 import com.galaxy.framework.aquarius.service.DepartmentService;
+import com.galaxy.framework.aquarius.service.SequenceService;
 import com.galaxy.framework.pisces.db.DeleteException;
 import com.galaxy.framework.pisces.db.InsertException;
 import com.galaxy.framework.pisces.db.UpdateException;
@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
-@Service
 @Transactional
 public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> implements DepartmentService {
 
@@ -32,7 +31,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
     private DepartmentMapper departmentMapper;
 
     @Autowired
-    private CodeService codeService;
+    private SequenceService redisSequenceService;
 
     @Override
     public void insert(List<Department> vars) {
@@ -180,7 +179,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
             }
             update(department);
         } else {
-            department.setCode(codeService.generate(Department.class.getName()));
+            department.setCode(redisSequenceService.generate(Department.class.getName()));
             if (StringUtils.isEmpty(department.getParentCode())) { // 创建根节点
                 department.setFullPath(department.getCode());
                 department.setFullName(department.getName());
