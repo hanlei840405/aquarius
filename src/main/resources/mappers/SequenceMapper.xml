@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.galaxy.framework.aquarius.mapper.SequenceMapper">
+
+    <update id="updateByVersion" parameterType="com.galaxy.framework.aquarius.entity.Sequence">
+        UPDATE sys_sequence SET sequence=#{sequence} version=#{version} + 1 WHERE id=#{id} AND version=#{version}
+    </update>
+
+</mapper>
