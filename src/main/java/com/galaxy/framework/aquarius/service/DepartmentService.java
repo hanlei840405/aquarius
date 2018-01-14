@@ -9,7 +9,7 @@ public interface DepartmentService extends CrudService<Department, Long> {
 
     Department save(Department department);
 
-    Department selectByCode(String code);
+    Department selectByCode(String code, String status);
 
     List<Department> selectAllByStatus(String status);
 

@@ -1,7 +1,9 @@
 package com.galaxy.framework.aquarius.service.impl;
 
 import com.galaxy.framework.aquarius.entity.Position;
+import com.galaxy.framework.aquarius.mapper.PositionMapper;
 import com.galaxy.framework.aquarius.service.PositionService;
+import com.galaxy.framework.aquarius.service.SequenceService;
 import com.galaxy.framework.pisces.db.DeleteException;
 import com.galaxy.framework.pisces.db.InsertException;
 import com.galaxy.framework.pisces.db.UpdateException;
@@ -11,6 +13,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -21,6 +24,12 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private PositionMapper positionMapper;
+
+    @Autowired
+    private SequenceService redisSequenceService;
 
     @Transactional
     @Override
@@ -102,6 +111,49 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
                 @Override
                 public int getBatchSize() {
                     return vars.size();
+                }
+            });
+        } catch (Exception e) {
+            throw new DeleteException();
+        }
+    }
+
+    @Override
+    public Position selectByCode(String code, String status) {
+        if (StringUtils.isEmpty(code)) {
+            return null;
+        }
+        Position query = new Position();
+        query.setCode(code);
+        query.setStatus(status);
+        return positionMapper.selectOne(query);
+    }
+
+    @Override
+    public Position save(Position position) {
+        Position exist = selectByCode(position.getCode(), "启用");
+        if (exist != null) { // 更新
+            update(position);
+        } else { // 新增
+            position.setCode(redisSequenceService.generate(Position.class.getName()));
+            insert(position);
+        }
+        return position;
+    }
+
+    @Transactional
+    @Override
+    public void deleteByCode(List<String> codes) {
+        try {
+            jdbcTemplate.batchUpdate("DELETE FROM sys_position WHERE code=?", new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                    preparedStatement.setString(1, codes.get(i));
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return codes.size();
                 }
             });
         } catch (Exception e) {

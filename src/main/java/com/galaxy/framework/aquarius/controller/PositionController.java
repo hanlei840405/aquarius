@@ -8,6 +8,7 @@ import com.galaxy.framework.pisces.vo.aquarius.DepartmentVo;
 import com.galaxy.framework.pisces.vo.aquarius.PositionVo;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class PositionController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping("/findAll")
-    public Page<PositionVo> findAll(String departmentCode, Integer pageNo, Integer pageSize) {
+    public PageInfo<PositionVo> findAll(String departmentCode, Integer pageNo, Integer pageSize) {
         Position query = new Position();
         query.setDepartmentCode(departmentCode);
         PageHelper.startPage(pageNo, pageSize);
@@ -36,7 +37,8 @@ public class PositionController {
         positions.forEach(position -> {
             positionVos.add(convert(position));
         });
-        return positionVos;
+        PageInfo<PositionVo> pageInfo = new PageInfo<>(positionVos);
+        return pageInfo;
     }
 
     @CrossOrigin(origins = "http://localhost:3000")

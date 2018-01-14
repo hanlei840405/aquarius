@@ -18,11 +18,11 @@ public class DepartmentController {
 
     @Autowired
     private DepartmentService departmentService;
-
+                                                                                                                                                                                                                              
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping("/get")
-    public Department get(String code) throws IOException {
-        Department department = departmentService.selectByCode(code);
+    public Department get(String code, String status) throws IOException {
+        Department department = departmentService.selectByCode(code, status);
         return department;
     }
 
