@@ -24,4 +24,6 @@ public class Department extends BaseEntity implements Serializable {
     private String parentCode;
 
     private boolean parent;
+
+    private String locationCode;
 }

@@ -2,8 +2,8 @@ package com.galaxy.framework.aquarius.service.impl;
 
 import com.galaxy.framework.aquarius.entity.PartTime;
 import com.galaxy.framework.aquarius.service.PartTimeService;
-import com.galaxy.framework.pisces.db.DeleteException;
-import com.galaxy.framework.pisces.db.InsertException;
+import com.galaxy.framework.pisces.exception.db.DeleteException;
+import com.galaxy.framework.pisces.exception.db.InsertException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;

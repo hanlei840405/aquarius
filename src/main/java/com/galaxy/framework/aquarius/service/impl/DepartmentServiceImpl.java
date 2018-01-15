@@ -4,10 +4,10 @@ import com.galaxy.framework.aquarius.entity.Department;
 import com.galaxy.framework.aquarius.mapper.DepartmentMapper;
 import com.galaxy.framework.aquarius.service.DepartmentService;
 import com.galaxy.framework.aquarius.service.SequenceService;
-import com.galaxy.framework.pisces.db.DeleteException;
-import com.galaxy.framework.pisces.db.InsertException;
-import com.galaxy.framework.pisces.db.UpdateException;
-import com.galaxy.framework.pisces.db.VersionException;
+import com.galaxy.framework.pisces.exception.db.DeleteException;
+import com.galaxy.framework.pisces.exception.db.InsertException;
+import com.galaxy.framework.pisces.exception.db.UpdateException;
+import com.galaxy.framework.pisces.exception.db.VersionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -129,10 +129,10 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
 
     @Override
     public Department save(Department department) {
-        if (department.getId() != null) {
-            Department exist = selectOne(department.getId());
+        if (StringUtils.isEmpty(department.getCode())) {
+            Department exist = selectByCode(department.getCode(), "启用");
             if (!StringUtils.pathEquals(exist.getParentCode(), department.getParentCode())) { // 迁移到新的部门下，修改自本节点起以下所有节点的路径
-                Department parent = selectByCode(department.getParentCode(),"启用"); // 新的上级组织
+                Department parent = selectByCode(department.getParentCode(), "启用"); // 新的上级组织
                 List<Department> departments = selectByFullPath(exist.getFullPath()); // 根据旧路径找到所有需要变更的部门
                 departments.forEach(dept -> {
                     dept.setFullName(dept.getFullName().replace(exist.getFullName(), parent.getFullName())); // 将全路径名称用新的替换掉旧的
@@ -144,7 +144,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
                 update(parent);
 
                 // 查找旧的上级，并判断是否更新parent状态
-                Department oldParent = selectByCode(exist.getParentCode(),"启用"); // 新的上级组织
+                Department oldParent = selectByCode(exist.getParentCode(), "启用"); // 新的上级组织
                 departments = selectByFullPath(oldParent.getFullPath());
                 if (departments.isEmpty()) { // 旧有上级已无下级部门，需要更新parent状态
                     oldParent.setParent(false);
@@ -214,5 +214,10 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
     @Override
     public List<Department> selectAllOrderByFullPath() {
         return departmentMapper.selectAllOrderByFullPath();
+    }
+
+    @Override
+    public int deleteByCode(String code) {
+        return 0;
     }
 }

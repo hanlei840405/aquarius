@@ -1,16 +1,19 @@
 package com.galaxy.framework.aquarius.service.impl;
 
 import com.galaxy.framework.aquarius.entity.User;
+import com.galaxy.framework.aquarius.mapper.UserMapper;
+import com.galaxy.framework.aquarius.service.SequenceService;
 import com.galaxy.framework.aquarius.service.UserService;
-import com.galaxy.framework.pisces.db.DeleteException;
-import com.galaxy.framework.pisces.db.InsertException;
-import com.galaxy.framework.pisces.db.UpdateException;
-import com.galaxy.framework.pisces.db.VersionException;
+import com.galaxy.framework.pisces.exception.db.DeleteException;
+import com.galaxy.framework.pisces.exception.db.InsertException;
+import com.galaxy.framework.pisces.exception.db.UpdateException;
+import com.galaxy.framework.pisces.exception.db.VersionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -21,6 +24,12 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private SequenceService redisSequenceService;
 
     @Transactional
     @Override
@@ -118,6 +127,44 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
                 @Override
                 public int getBatchSize() {
                     return vars.size();
+                }
+            });
+        } catch (Exception e) {
+            throw new DeleteException();
+        }
+    }
+
+    @Override
+    public User selectByCode(String code, String status) {
+        User query = new User();
+        query.setCode(code);
+        query.setStatus(status);
+        return selectOne(query);
+    }
+
+    @Override
+    public User save(User user) {
+        if (StringUtils.isEmpty(user.getCode())) { // 新增
+            String sequence = redisSequenceService.generate(User.class.getName());
+            insert(user);
+        } else { // 更新
+            update(user);
+        }
+        return user;
+    }
+
+    @Override
+    public void deleteByCode(List<String> codes) {
+        try {
+            jdbcTemplate.batchUpdate("DELETE FROM sys_user WHERE code=?", new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                    preparedStatement.setString(1, codes.get(i));
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return codes.size();
                 }
             });
         } catch (Exception e) {
