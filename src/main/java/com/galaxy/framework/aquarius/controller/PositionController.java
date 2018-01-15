@@ -11,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -71,14 +72,14 @@ public class PositionController {
         PositionVo vo = new PositionVo();
         if (position != null) {
             BeanUtils.copyProperties(position, vo, "id", "parentCode", "departmentCode");
-            Position parent = positionService.selectByCode(position.getParentCode(), "启用");
-            if (parent != null) {
+            if (!StringUtils.isEmpty(position.getParentCode())) {
+                Position parent = positionService.selectByCode(position.getParentCode(), "启用");
                 PositionVo parentVo = new PositionVo();
                 BeanUtils.copyProperties(parent, parentVo, "parentCode", "departmentCode");
                 vo.setPositionVo(parentVo);
             }
-            Department department = departmentService.selectByCode(position.getDepartmentCode(), "启用");
-            if (department != null) {
+            if (!StringUtils.isEmpty(position.getDepartmentCode())) {
+                Department department = departmentService.selectByCode(position.getDepartmentCode(), "启用");
                 DepartmentVo departmentVo = new DepartmentVo();
                 BeanUtils.copyProperties(department, departmentVo, "parentCode");
                 vo.setDepartmentVo(departmentVo);

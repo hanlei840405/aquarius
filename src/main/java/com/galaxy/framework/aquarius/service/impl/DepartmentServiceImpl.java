@@ -132,7 +132,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
         if (StringUtils.isEmpty(department.getCode())) {
             Department exist = selectByCode(department.getCode(), "启用");
             if (!StringUtils.pathEquals(exist.getParentCode(), department.getParentCode())) { // 迁移到新的部门下，修改自本节点起以下所有节点的路径
-                Department parent = selectByCode(department.getParentCode(), "启用"); // 新的上级组织
+                Department parent = selectParentByCode(department.getParentCode(), "启用", true); // 新的上级组织
                 List<Department> departments = selectByFullPath(exist.getFullPath()); // 根据旧路径找到所有需要变更的部门
                 departments.forEach(dept -> {
                     dept.setFullName(dept.getFullName().replace(exist.getFullName(), parent.getFullName())); // 将全路径名称用新的替换掉旧的
@@ -144,7 +144,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
                 update(parent);
 
                 // 查找旧的上级，并判断是否更新parent状态
-                Department oldParent = selectByCode(exist.getParentCode(), "启用"); // 新的上级组织
+                Department oldParent = selectParentByCode(exist.getParentCode(), "启用", true); // 新的上级组织
                 departments = selectByFullPath(oldParent.getFullPath());
                 if (departments.isEmpty()) { // 旧有上级已无下级部门，需要更新parent状态
                     oldParent.setParent(false);
@@ -185,7 +185,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
                 department.setFullPath(department.getCode());
                 department.setFullName(department.getName());
             } else {
-                Department parent = selectByCode(department.getParentCode(), "启用");
+                Department parent = selectParentByCode(department.getParentCode(), "启用", true);
                 department.setFullPath(parent.getFullPath() + "-" + department.getCode());
                 department.setFullName(parent.getFullName() + "-" + department.getName());
                 parent.setParent(true);
@@ -196,12 +196,21 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
         return department;
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Department selectByCode(String code, String status) {
         Department query = new Department();
         query.setCode(code);
         query.setStatus(status);
+        return departmentMapper.selectByCode(query);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Department selectParentByCode(String code, String status, boolean parent) {
+        Department query = new Department();
+        query.setCode(code);
+        query.setStatus(status);
+        query.setParent(parent);
         return departmentMapper.selectOne(query);
     }
 

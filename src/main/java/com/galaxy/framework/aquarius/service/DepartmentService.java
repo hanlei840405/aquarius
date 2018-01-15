@@ -11,6 +11,8 @@ public interface DepartmentService extends CrudService<Department, Long> {
 
     Department selectByCode(String code, String status);
 
+    Department selectParentByCode(String code, String status, boolean parent);
+
     List<Department> selectAllByStatus(String status);
 
     List<Department> selectAllOrderByFullPath();

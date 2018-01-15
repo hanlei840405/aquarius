@@ -3,8 +3,6 @@ package com.galaxy.framework.aquarius.controller;
 import com.galaxy.framework.aquarius.entity.Location;
 import com.galaxy.framework.aquarius.service.LocationService;
 import com.galaxy.framework.pisces.vo.aquarius.LocationVo;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +19,9 @@ public class LocationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping("/findAll")
-    public PageInfo<LocationVo> findAll(Integer pageNo, Integer pageSize) {
-        PageHelper.startPage(pageNo, pageSize);
-        List<Location> locations = locationService.selectAll();
-        List<LocationVo> page = locations.stream().map(location -> convert(location)).collect(Collectors.toList());
-        PageInfo<LocationVo> pageInfo = new PageInfo<>(page);
-        return pageInfo;
+    public List<LocationVo> findAll() {
+        List<Location> locations = locationService.findByStatus("启用");
+        return locations.stream().map(location -> convert(location)).collect(Collectors.toList());
     }
 
     @CrossOrigin(origins = "http://localhost:3000")

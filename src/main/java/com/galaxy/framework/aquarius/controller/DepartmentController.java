@@ -96,14 +96,15 @@ public class DepartmentController {
     private DepartmentVo convert(Department department) {
         DepartmentVo vo = new DepartmentVo();
         BeanUtils.copyProperties(department, vo, "id", "parentCode", "locationCode");
-        Department parent = departmentService.selectByCode(department.getParentCode(), "启用");
-        if (parent != null) {
+
+        if (!StringUtils.isEmpty(department.getParentCode())) {
+            Department parent = departmentService.selectParentByCode(department.getParentCode(), "启用", true);
             DepartmentVo parentVo = new DepartmentVo();
             BeanUtils.copyProperties(parent, parentVo, "id", "parentCode", "locationCode");
             vo.setDepartmentVo(parentVo);
         }
-        Location location = locationService.selectByCode(department.getLocationCode(), "启用");
-        if (location != null) {
+        if (!StringUtils.isEmpty(department.getLocationCode())) {
+            Location location = locationService.selectByCode(department.getLocationCode(), "启用");
             LocationVo locationVo = new LocationVo();
             BeanUtils.copyProperties(location, locationVo, "id");
             vo.setLocationVo(locationVo);

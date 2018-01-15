@@ -31,6 +31,13 @@ public class LocationServiceImpl extends CrudServiceImpl<Location, Long> impleme
     private JdbcTemplate jdbcTemplate;
 
     @Override
+    public List<Location> findByStatus(String status) {
+        Location query = new Location();
+        query.setStatus(status);
+        return locationMapper.select(query);
+    }
+
+    @Override
     public Location selectByCode(String code, String status) {
         Location query = new Location();
         query.setCode(code);

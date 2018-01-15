@@ -9,7 +9,7 @@ import java.util.List;
 public interface DepartmentMapper extends tk.mybatis.mapper.common.Mapper<Department> {
     List<Department> selectByFullPath(String fullPath);
 
-    Department selectByCode(String code);
+    Department selectByCode(Department department);
 
     List<Department> selectAllByStatus(String status);
 

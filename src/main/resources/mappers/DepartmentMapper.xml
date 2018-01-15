@@ -14,6 +14,10 @@
         SELECT * FROM sys_department ORDER BY full_path
     </select>
 
+    <select id="selectByCode" resultType="com.galaxy.framework.aquarius.entity.Department" parameterType="com.galaxy.framework.aquarius.entity.Department">
+        SELECT * FROM sys_department WHERE code=#{code} AND status=#{status}
+    </select>
+
     <delete id="deleteByCode" parameterType="string">
         DELETE FROM sys_department WHERE code=#{code}
     </delete>

@@ -16,7 +16,7 @@ import java.io.IOException;
 @Configuration
 @EnableCaching
 public class CacheConfig {
-    @Value("${spring.redis.host}")
+    @Value("${spring.redis.host: eureka-zuul}")
     private String host;
 
     @Bean(destroyMethod = "shutdown")
