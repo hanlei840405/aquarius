@@ -6,7 +6,6 @@ import com.galaxy.framework.aquarius.service.DepartmentService;
 import com.galaxy.framework.aquarius.service.PositionService;
 import com.galaxy.framework.pisces.vo.aquarius.DepartmentVo;
 import com.galaxy.framework.pisces.vo.aquarius.PositionVo;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/position")
@@ -32,11 +32,8 @@ public class PositionController {
         Position query = new Position();
         query.setDepartmentCode(departmentCode);
         PageHelper.startPage(pageNo, pageSize);
-        Page<Position> positions = (Page<Position>) positionService.select(query);
-        Page<PositionVo> positionVos = new Page<>();
-        positions.forEach(position -> {
-            positionVos.add(convert(position));
-        });
+        List<Position> positions = positionService.select(query);
+        List<PositionVo> positionVos = positions.stream().map(position -> convert(position)).collect(Collectors.toList());
         PageInfo<PositionVo> pageInfo = new PageInfo<>(positionVos);
         return pageInfo;
     }
@@ -71,37 +68,35 @@ public class PositionController {
     }
 
     private PositionVo convert(Position position) {
-        if (position == null) {
-            return null;
-        }
         PositionVo vo = new PositionVo();
-        BeanUtils.copyProperties(position, vo, "id", "parentCode", "departmentCode");
-        Position parent = positionService.selectByCode(position.getParentCode(), "启用");
-        if (parent != null) {
-            PositionVo parentVo = new PositionVo();
-            BeanUtils.copyProperties(parent, parentVo, "parentCode", "departmentCode");
-            vo.setPositionVo(parentVo);
-        }
-        Department department = departmentService.selectByCode(position.getDepartmentCode(), "启用");
-        if (department != null) {
-            DepartmentVo departmentVo = new DepartmentVo();
-            BeanUtils.copyProperties(department, departmentVo, "parentCode");
-            vo.setDepartmentVo(departmentVo);
+        if (position != null) {
+            BeanUtils.copyProperties(position, vo, "id", "parentCode", "departmentCode");
+            Position parent = positionService.selectByCode(position.getParentCode(), "启用");
+            if (parent != null) {
+                PositionVo parentVo = new PositionVo();
+                BeanUtils.copyProperties(parent, parentVo, "parentCode", "departmentCode");
+                vo.setPositionVo(parentVo);
+            }
+            Department department = departmentService.selectByCode(position.getDepartmentCode(), "启用");
+            if (department != null) {
+                DepartmentVo departmentVo = new DepartmentVo();
+                BeanUtils.copyProperties(department, departmentVo, "parentCode");
+                vo.setDepartmentVo(departmentVo);
+            }
         }
         return vo;
     }
 
     private Position convert(PositionVo vo) {
-        if (vo == null) {
-            return null;
-        }
         Position position = new Position();
-        BeanUtils.copyProperties(vo, position, "positionVo", "departmentVo");
-        if (vo.getPositionVo() != null) {
-            position.setParentCode(vo.getPositionVo().getCode());
-        }
-        if (vo.getDepartmentVo() != null) {
-            position.setDepartmentCode(vo.getDepartmentVo().getCode());
+        if (vo != null) {
+            BeanUtils.copyProperties(vo, position, "positionVo", "departmentVo");
+            if (vo.getPositionVo() != null) {
+                position.setParentCode(vo.getPositionVo().getCode());
+            }
+            if (vo.getDepartmentVo() != null) {
+                position.setDepartmentCode(vo.getDepartmentVo().getCode());
+            }
         }
         return position;
     }

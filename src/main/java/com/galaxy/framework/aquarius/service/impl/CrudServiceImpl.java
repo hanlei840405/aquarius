@@ -1,10 +1,10 @@
 package com.galaxy.framework.aquarius.service.impl;
 
 import com.galaxy.framework.aquarius.service.CrudService;
-import com.galaxy.framework.pisces.db.DeleteException;
-import com.galaxy.framework.pisces.db.InsertException;
-import com.galaxy.framework.pisces.db.UpdateException;
-import com.galaxy.framework.pisces.db.VersionException;
+import com.galaxy.framework.pisces.exception.db.DeleteException;
+import com.galaxy.framework.pisces.exception.db.InsertException;
+import com.galaxy.framework.pisces.exception.db.UpdateException;
+import com.galaxy.framework.pisces.exception.db.VersionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.common.Mapper;
