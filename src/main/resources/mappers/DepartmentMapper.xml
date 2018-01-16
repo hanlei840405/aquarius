@@ -14,11 +14,22 @@
         SELECT * FROM sys_department ORDER BY full_path
     </select>
 
-    <select id="selectByCode" resultType="com.galaxy.framework.aquarius.entity.Department" parameterType="com.galaxy.framework.aquarius.entity.Department">
-        SELECT * FROM sys_department WHERE code=#{code} AND status=#{status}
+    <select id="selectByCode" resultType="com.galaxy.framework.aquarius.entity.Department"
+            parameterType="com.galaxy.framework.aquarius.entity.Department">
+        SELECT * FROM sys_department WHERE code=#{code}
+        <if test="status != null">
+            AND status=#{status}
+        </if>
+    </select>
+
+    <select id="selectAllByParent" resultType="com.galaxy.framework.aquarius.entity.Department" parameterType="map">
+        SELECT * FROM sys_department WHERE parent_code=#{parentCode}
+        <if test="status != null">
+            AND status=#{status}
+        </if>
     </select>
 
     <delete id="deleteByCode" parameterType="string">
-        DELETE FROM sys_department WHERE code=#{code}
+      UPDATE sys_department SET status='删除' WHERE code=#{code}
     </delete>
 </mapper>

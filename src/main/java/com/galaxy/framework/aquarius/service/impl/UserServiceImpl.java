@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl extends CrudServiceImpl<User, Long> implements UserService {
@@ -170,5 +171,15 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
         } catch (Exception e) {
             throw new DeleteException();
         }
+    }
+
+    @Override
+    public List<User> selectByDepartment(Map<String, Object> params) {
+        return userMapper.selectByDepartment(params);
+    }
+
+    @Override
+    public List<User> selectByPosition(Map<String, Object> params) {
+        return userMapper.selectByPosition(params);
     }
 }

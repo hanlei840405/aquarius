@@ -56,6 +56,7 @@ public class PositionController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/save")
     public PositionVo save(@RequestBody PositionVo positionVo) {
+        positionVo.setStatus("启用");
         Position position = convert(positionVo);
         positionService.save(position);
         return positionVo;
@@ -68,21 +69,32 @@ public class PositionController {
         return 200;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/reuse")
+    public int reuse(@RequestBody List<String> codes) {
+        positionService.reuse(codes);
+        return 200;
+    }
+
     private PositionVo convert(Position position) {
         PositionVo vo = new PositionVo();
         if (position != null) {
             BeanUtils.copyProperties(position, vo, "id", "parentCode", "departmentCode");
             if (!StringUtils.isEmpty(position.getParentCode())) {
                 Position parent = positionService.selectByCode(position.getParentCode(), "启用");
-                PositionVo parentVo = new PositionVo();
-                BeanUtils.copyProperties(parent, parentVo, "parentCode", "departmentCode");
-                vo.setPositionVo(parentVo);
+                if (parent != null) {
+                    PositionVo parentVo = new PositionVo();
+                    BeanUtils.copyProperties(parent, parentVo, "parentCode", "departmentCode");
+                    vo.setPositionVo(parentVo);
+                }
             }
             if (!StringUtils.isEmpty(position.getDepartmentCode())) {
                 Department department = departmentService.selectByCode(position.getDepartmentCode(), "启用");
-                DepartmentVo departmentVo = new DepartmentVo();
-                BeanUtils.copyProperties(department, departmentVo, "parentCode");
-                vo.setDepartmentVo(departmentVo);
+                if (department != null) {
+                    DepartmentVo departmentVo = new DepartmentVo();
+                    BeanUtils.copyProperties(department, departmentVo, "parentCode");
+                    vo.setDepartmentVo(departmentVo);
+                }
             }
         }
         return vo;

@@ -1,13 +1,18 @@
 package com.galaxy.framework.aquarius.service.impl;
 
 import com.galaxy.framework.aquarius.entity.Department;
+import com.galaxy.framework.aquarius.entity.Position;
+import com.galaxy.framework.aquarius.entity.User;
 import com.galaxy.framework.aquarius.mapper.DepartmentMapper;
 import com.galaxy.framework.aquarius.service.DepartmentService;
+import com.galaxy.framework.aquarius.service.PositionService;
 import com.galaxy.framework.aquarius.service.SequenceService;
+import com.galaxy.framework.aquarius.service.UserService;
 import com.galaxy.framework.pisces.exception.db.DeleteException;
 import com.galaxy.framework.pisces.exception.db.InsertException;
 import com.galaxy.framework.pisces.exception.db.UpdateException;
 import com.galaxy.framework.pisces.exception.db.VersionException;
+import com.galaxy.framework.pisces.exception.rule.NotEmptyException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -18,7 +23,9 @@ import org.springframework.util.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Transactional
@@ -33,6 +40,12 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
 
     @Autowired
     private SequenceService redisSequenceService;
+
+    @Autowired
+    private PositionService positionService;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public void insert(List<Department> vars) {
@@ -63,7 +76,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
 
     @Override
     public void update(List<Department> vars) {
-        int[] arrays = null;
+        int[] arrays;
         try {
             arrays = jdbcTemplate.batchUpdate("UPDATE sys_department SET name=?,full_path=?,full_name=?,parent_code=?,status=?,modifier=?,modified=now(),version=version+1 WHERE id=? AND version=?",
                     new BatchPreparedStatementSetter() {
@@ -129,10 +142,11 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
 
     @Override
     public Department save(Department department) {
-        if (StringUtils.isEmpty(department.getCode())) {
+        if (!StringUtils.isEmpty(department.getCode())) {
             Department exist = selectByCode(department.getCode(), "启用");
+            department.setId(exist.getId());
             if (!StringUtils.pathEquals(exist.getParentCode(), department.getParentCode())) { // 迁移到新的部门下，修改自本节点起以下所有节点的路径
-                Department parent = selectParentByCode(department.getParentCode(), "启用", true); // 新的上级组织
+                Department parent = selectByCode(department.getParentCode(), "启用"); // 新的上级组织
                 List<Department> departments = selectByFullPath(exist.getFullPath()); // 根据旧路径找到所有需要变更的部门
                 departments.forEach(dept -> {
                     dept.setFullName(dept.getFullName().replace(exist.getFullName(), parent.getFullName())); // 将全路径名称用新的替换掉旧的
@@ -144,7 +158,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
                 update(parent);
 
                 // 查找旧的上级，并判断是否更新parent状态
-                Department oldParent = selectParentByCode(exist.getParentCode(), "启用", true); // 新的上级组织
+                Department oldParent = selectByCode(exist.getParentCode(), "启用"); // 新的上级组织
                 departments = selectByFullPath(oldParent.getFullPath());
                 if (departments.isEmpty()) { // 旧有上级已无下级部门，需要更新parent状态
                     oldParent.setParent(false);
@@ -168,16 +182,6 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
                 // 更新字节点fullName
                 update(departments);
             }
-
-            if (!exist.getStatus().equals(department.getStatus())) {// 状态变更，更新自本节点起以下所有节点状态
-                // 用department的fullName替代exist的fullName查询所有字节点, 不包括本节点
-                List<Department> departments = selectByFullPath(department.getFullPath() + "-");
-                departments.forEach(dept -> {
-                    dept.setStatus(department.getStatus());
-                });
-                // 更新子节点状态
-                update(departments);
-            }
             update(department);
         } else {
             department.setCode(redisSequenceService.generate(Department.class.getName()));
@@ -185,7 +189,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
                 department.setFullPath(department.getCode());
                 department.setFullName(department.getName());
             } else {
-                Department parent = selectParentByCode(department.getParentCode(), "启用", true);
+                Department parent = selectByCode(department.getParentCode(), "启用");
                 department.setFullPath(parent.getFullPath() + "-" + department.getCode());
                 department.setFullName(parent.getFullName() + "-" + department.getName());
                 parent.setParent(true);
@@ -196,22 +200,13 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
         return department;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Department selectByCode(String code, String status) {
         Department query = new Department();
         query.setCode(code);
         query.setStatus(status);
         return departmentMapper.selectByCode(query);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Department selectParentByCode(String code, String status, boolean parent) {
-        Department query = new Department();
-        query.setCode(code);
-        query.setStatus(status);
-        query.setParent(parent);
-        return departmentMapper.selectOne(query);
     }
 
     @Transactional(readOnly = true)
@@ -227,6 +222,30 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
 
     @Override
     public int deleteByCode(String code) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("parentCode", code);
+        params.put("status", "启用");
+        List<Department> departments = departmentMapper.selectAllByParent(params);
+        if (!departments.isEmpty()) {
+            throw new NotEmptyException("存在启用的下级部门，请确保下级部门都已删除");
+        }
+        List<Position> positions = positionService.selectByDepartment(params);
+        if (!positions.isEmpty()) {
+            throw new NotEmptyException("存在启用的岗位，请确保该部门下的岗位已删除");
+        }
+        List<User> users = userService.selectByDepartment(params);
+        if (!users.isEmpty()) {
+            throw new NotEmptyException("存在启用的人员，请确保该部门下的人员已删除");
+        }
+
+        return departmentMapper.deleteByCode(code);
+    }
+
+    @Override
+    public int reuse(String code) {
+        Department department = selectByCode(code, "删除");
+        department.setStatus("启用");
+        update(department);
         return 0;
     }
 }

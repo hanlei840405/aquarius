@@ -8,6 +8,7 @@ import com.galaxy.framework.pisces.exception.db.DeleteException;
 import com.galaxy.framework.pisces.exception.db.InsertException;
 import com.galaxy.framework.pisces.exception.db.UpdateException;
 import com.galaxy.framework.pisces.exception.db.VersionException;
+import com.galaxy.framework.pisces.exception.rule.NotEmptyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,7 +18,9 @@ import org.springframework.util.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PositionServiceImpl extends CrudServiceImpl<Position, Long> implements PositionService {
@@ -144,8 +147,15 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
     @Transactional
     @Override
     public void deleteByCode(List<String> codes) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("parentCodes", codes);
+        params.put("status", "启用");
+        List<Position> positions = selectByParent(params);
+        if (!positions.isEmpty()) {
+            throw new NotEmptyException("存在启用的下级岗位，请确保下级岗位都已删除");
+        }
         try {
-            jdbcTemplate.batchUpdate("DELETE FROM sys_position WHERE code=?", new BatchPreparedStatementSetter() {
+            jdbcTemplate.batchUpdate("UPDATE sys_position SET status='删除' WHERE code=?", new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
                     preparedStatement.setString(1, codes.get(i));
@@ -158,6 +168,35 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
             });
         } catch (Exception e) {
             throw new DeleteException();
+        }
+    }
+
+    @Override
+    public List<Position> selectByDepartment(Map<String, Object> params) {
+        return positionMapper.selectByDepartment(params);
+    }
+
+    @Override
+    public List<Position> selectByParent(Map<String, Object> params) {
+        return positionMapper.selectByParent(params);
+    }
+
+    @Override
+    public void reuse(List<String> codes) {
+        try {
+            jdbcTemplate.batchUpdate("UPDATE sys_position SET status='启用' WHERE code=?", new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                    preparedStatement.setString(1, codes.get(i));
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return codes.size();
+                }
+            });
+        } catch (Exception e) {
+            throw new UpdateException();
         }
     }
 }

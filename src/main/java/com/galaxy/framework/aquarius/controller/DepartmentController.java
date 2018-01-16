@@ -78,9 +78,10 @@ public class DepartmentController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("save")
+    @PostMapping("/save")
     public DepartmentVo save(@RequestBody DepartmentVo departmentVo) {
         if (departmentVo != null) {
+            departmentVo.setStatus("启用");
             departmentService.save(convert(departmentVo));
             return departmentVo;
         }
@@ -88,9 +89,23 @@ public class DepartmentController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("delete")
-    public int delete(@RequestBody DepartmentVo departmentVo) {
-        return departmentService.deleteByCode(departmentVo.getCode());
+    @PostMapping("/delete")
+    public DepartmentVo delete(@RequestBody DepartmentVo departmentVo) {
+        if (departmentVo != null) {
+            departmentService.deleteByCode(departmentVo.getCode());
+            return departmentVo;
+        }
+        throw new EmptyException();
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/reuse")
+    public DepartmentVo reuse(@RequestBody DepartmentVo departmentVo) {
+        if (departmentVo != null) {
+            departmentService.reuse(departmentVo.getCode());
+            return departmentVo;
+        }
+        throw new EmptyException();
     }
 
     private DepartmentVo convert(Department department) {
@@ -98,16 +113,20 @@ public class DepartmentController {
         BeanUtils.copyProperties(department, vo, "id", "parentCode", "locationCode");
 
         if (!StringUtils.isEmpty(department.getParentCode())) {
-            Department parent = departmentService.selectParentByCode(department.getParentCode(), "启用", true);
-            DepartmentVo parentVo = new DepartmentVo();
-            BeanUtils.copyProperties(parent, parentVo, "id", "parentCode", "locationCode");
-            vo.setDepartmentVo(parentVo);
+            Department parent = departmentService.selectByCode(department.getParentCode(), "启用");
+            if (parent != null) {
+                DepartmentVo parentVo = new DepartmentVo();
+                BeanUtils.copyProperties(parent, parentVo, "id", "parentCode", "locationCode");
+                vo.setDepartmentVo(parentVo);
+            }
         }
         if (!StringUtils.isEmpty(department.getLocationCode())) {
             Location location = locationService.selectByCode(department.getLocationCode(), "启用");
-            LocationVo locationVo = new LocationVo();
-            BeanUtils.copyProperties(location, locationVo, "id");
-            vo.setLocationVo(locationVo);
+            if (location != null) {
+                LocationVo locationVo = new LocationVo();
+                BeanUtils.copyProperties(location, locationVo, "id");
+                vo.setLocationVo(locationVo);
+            }
         }
         return vo;
     }

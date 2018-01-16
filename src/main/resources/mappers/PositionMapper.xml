@@ -9,4 +9,21 @@
             #{item}
         </foreach>
     </select>
+    <select id="selectByDepartment" resultType="com.galaxy.framework.aquarius.entity.Position"
+            parameterType="map">
+        SELECT * FROM sys_position WHERE department_code=#{departmentCode}
+        <if test="status != null">
+            AND status=#{status}
+        </if>
+    </select>
+    <select id="selectByParent" resultType="com.galaxy.framework.aquarius.entity.Position"
+            parameterType="map">
+        SELECT * FROM sys_position WHERE parent_code IN
+        <foreach item="item" index="index" collection="parentCodes" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="status != null">
+            AND status=#{status}
+        </if>
+    </select>
 </mapper>

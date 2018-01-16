@@ -2,5 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.galaxy.framework.aquarius.mapper.UserMapper">
-
+    <select id="selectByDepartment" resultType="com.galaxy.framework.aquarius.entity.User"
+            parameterType="map">
+        SELECT * FROM sys_user WHERE department_code=#{departmentCode}
+        <if test="status != null">
+            AND status=#{status}
+        </if>
+    </select>
+    <select id="selectByPosition" resultType="com.galaxy.framework.aquarius.entity.User"
+            parameterType="map">
+        SELECT * FROM sys_user WHERE position_code=#{positionCode}
+        <if test="status != null">
+            AND status=#{status}
+        </if>
+    </select>
 </mapper>
