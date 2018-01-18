@@ -4,7 +4,20 @@ import com.galaxy.framework.aquarius.entity.Department;
 
 import java.util.List;
 
-public interface DepartmentService extends CrudService<Department, Long> {
+public interface DepartmentService {
+
+    Department insert(Department department);
+
+    void insert(List<Department> departments);
+
+    Department update(Department department);
+
+    void update(List<Department> departments);
+
+    int delete(Long id);
+
+    void delete(List<Long> ids);
+    
     List<Department> selectByFullPath(String fullPath);
 
     Department save(Department department);

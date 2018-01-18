@@ -1,19 +1,332 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.galaxy.framework.aquarius.mapper.UserMapper">
-    <select id="selectByDepartment" resultType="com.galaxy.framework.aquarius.entity.User"
-            parameterType="map">
-        SELECT * FROM sys_user WHERE department_code=#{departmentCode}
-        <if test="status != null">
-            AND status=#{status}
-        </if>
+    <resultMap id="BaseResultMap" type="com.galaxy.framework.aquarius.entity.User">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="VARCHAR"/>
+        <result column="birthday" property="birthday" jdbcType="VARCHAR"/>
+        <result column="entry_day" property="entryDay" jdbcType="VARCHAR"/>
+        <result column="regular_day" property="regularDay" jdbcType="VARCHAR"/>
+        <result column="leave_day" property="leaveDay" jdbcType="VARCHAR"/>
+        <result column="department_code" property="departmentCode" jdbcType="VARCHAR"/>
+        <result column="position_code" property="positionCode" jdbcType="VARCHAR"/>
+        <result column="head_img" property="headImg" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="created" property="created" jdbcType="TIMESTAMP"/>
+        <result column="modifier" property="modifier" jdbcType="VARCHAR"/>
+        <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
+        <result column="version" property="version" jdbcType="TINYINT"/>
+    </resultMap>
+    <resultMap id="RelationResultMap" type="com.galaxy.framework.aquarius.entity.User">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="VARCHAR"/>
+        <result column="birthday" property="birthday" jdbcType="VARCHAR"/>
+        <result column="entry_day" property="entryDay" jdbcType="VARCHAR"/>
+        <result column="regular_day" property="regularDay" jdbcType="VARCHAR"/>
+        <result column="leave_day" property="leaveDay" jdbcType="VARCHAR"/>
+        <result column="head_img" property="headImg" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="created" property="created" jdbcType="TIMESTAMP"/>
+        <result column="modifier" property="modifier" jdbcType="VARCHAR"/>
+        <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
+        <result column="version" property="version" jdbcType="TINYINT"/>
+        <association property="department" column="department_code"
+                     javaType="com.galaxy.framework.aquarius.entity.Department">
+            <id column="department_code" property="code" jdbcType="BIGINT"/>
+            <result column="department_name" property="name" jdbcType="VARCHAR"/>
+        </association>
+        <association property="position" column="position_code"
+                     javaType="com.galaxy.framework.aquarius.entity.Location">
+            <id column="position_code" property="code" jdbcType="VARCHAR"/>
+            <result column="position_name" property="name" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, code, name, email, mobile, gender, birthday, entry_day, regular_day, leave_day,
+        department_code, position_code, head_img, status, creator, created, modifier, modified,
+        version
+    </sql>
+
+    <sql id="Relation_Column_List">
+        t1.id, t1.code, t1.name, t1.email, t1.mobile, t1.gender, t1.birthday, t1.entry_day, t1.regular_day, t1.leave_day,
+        t1.head_img, t1.status, t1.creator, t1.created, t1.modifier, t1.modified, t1.version, t2.code AS department_code,
+        t2.name AS position_name, t3.code AS position_code, t3.name AS position_name
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user
+        where id = #{id,jdbcType=BIGINT}
     </select>
-    <select id="selectByPosition" resultType="com.galaxy.framework.aquarius.entity.User"
-            parameterType="map">
-        SELECT * FROM sys_user WHERE position_code=#{positionCode}
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from sys_user
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.galaxy.framework.aquarius.entity.User">
+        insert into sys_user (id, code, name,
+        email, mobile, gender,
+        birthday, entry_day, regular_day,
+        leave_day, department_code, position_code,
+        head_img, status, creator,
+        created, modifier, modified,
+        version)
+        values (#{id,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+        #{email,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR},
+        #{birthday,jdbcType=VARCHAR}, #{entryDay,jdbcType=VARCHAR}, #{regularDay,jdbcType=VARCHAR},
+        #{leaveDay,jdbcType=VARCHAR}, #{departmentCode,jdbcType=VARCHAR}, #{positionCode,jdbcType=VARCHAR},
+        #{headImg,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR},
+        #{created,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR}, #{modified,jdbcType=TIMESTAMP},
+        #{version,jdbcType=TINYINT})
+    </insert>
+    <insert id="insertSelective" parameterType="com.galaxy.framework.aquarius.entity.User">
+        insert into sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="code != null">
+                code,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="birthday != null">
+                birthday,
+            </if>
+            <if test="entryDay != null">
+                entry_day,
+            </if>
+            <if test="regularDay != null">
+                regular_day,
+            </if>
+            <if test="leaveDay != null">
+                leave_day,
+            </if>
+            <if test="departmentCode != null">
+                department_code,
+            </if>
+            <if test="positionCode != null">
+                position_code,
+            </if>
+            <if test="headImg != null">
+                head_img,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="created != null">
+                created,
+            </if>
+            <if test="modifier != null">
+                modifier,
+            </if>
+            <if test="modified != null">
+                modified,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="code != null">
+                #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null">
+                #{birthday,jdbcType=VARCHAR},
+            </if>
+            <if test="entryDay != null">
+                #{entryDay,jdbcType=VARCHAR},
+            </if>
+            <if test="regularDay != null">
+                #{regularDay,jdbcType=VARCHAR},
+            </if>
+            <if test="leaveDay != null">
+                #{leaveDay,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentCode != null">
+                #{departmentCode,jdbcType=VARCHAR},
+            </if>
+            <if test="positionCode != null">
+                #{positionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="headImg != null">
+                #{headImg,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="created != null">
+                #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifier != null">
+                #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="modified != null">
+                #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.aquarius.entity.User">
+        update sys_user
+        <set>
+            <if test="code != null">
+                code = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday,jdbcType=VARCHAR},
+            </if>
+            <if test="entryDay != null">
+                entry_day = #{entryDay,jdbcType=VARCHAR},
+            </if>
+            <if test="regularDay != null">
+                regular_day = #{regularDay,jdbcType=VARCHAR},
+            </if>
+            <if test="leaveDay != null">
+                leave_day = #{leaveDay,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentCode != null">
+                department_code = #{departmentCode,jdbcType=VARCHAR},
+            </if>
+            <if test="positionCode != null">
+                position_code = #{positionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="headImg != null">
+                head_img = #{headImg,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="modified != null">
+                modified = #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                version = #{version,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.aquarius.entity.User">
+        update sys_user
+        set code = #{code,jdbcType=VARCHAR},
+        name = #{name,jdbcType=VARCHAR},
+        email = #{email,jdbcType=VARCHAR},
+        mobile = #{mobile,jdbcType=VARCHAR},
+        gender = #{gender,jdbcType=VARCHAR},
+        birthday = #{birthday,jdbcType=VARCHAR},
+        entry_day = #{entryDay,jdbcType=VARCHAR},
+        regular_day = #{regularDay,jdbcType=VARCHAR},
+        leave_day = #{leaveDay,jdbcType=VARCHAR},
+        department_code = #{departmentCode,jdbcType=VARCHAR},
+        position_code = #{positionCode,jdbcType=VARCHAR},
+        head_img = #{headImg,jdbcType=VARCHAR},
+        status = #{status,jdbcType=VARCHAR},
+        creator = #{creator,jdbcType=VARCHAR},
+        created = #{created,jdbcType=TIMESTAMP},
+        modifier = #{modifier,jdbcType=VARCHAR},
+        modified = #{modified,jdbcType=TIMESTAMP},
+        version = #{version,jdbcType=TINYINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 自定义 -->
+    <select id="selectByCode" resultMap="RelationResultMap"
+            parameterType="string">
+        SELECT
+        <include refid="Relation_Column_List"/>
+        FROM sys_user t1
+        LEFT JOIN sys_department t2 on t1.department_code=t2.code
+        LEFT JOIN sys_position t3 on t1.position_code=t3.code
+        WHERE
+        t1.code=#{code}
+    </select>
+    <select id="find" resultMap="RelationResultMap"
+            parameterType="com.galaxy.framework.aquarius.entity.User">
+        SELECT
+        <include refid="Relation_Column_List"/>
+        FROM sys_user t1
+        LEFT JOIN sys_department t2 on t1.department_code=t2.code
+        LEFT JOIN sys_position t3 on t1.position_code=t3.code
+        WHERE
+        1=1
+        <if test="code != null">
+            AND t1.code=#{code}
+        </if>
+        <if test="name != null">
+            AND t1.name=#{name}
+        </if>
+        <if test="positionCode != null">
+            AND t1.position_code=#{positionCode}
+        </if>
+        <if test="departmentCode != null">
+            AND t1.department_code=#{departmentCode}
+        </if>
         <if test="status != null">
-            AND status=#{status}
+            AND t1.status=#{status}
         </if>
     </select>
 </mapper>

@@ -7,11 +7,22 @@ import java.util.List;
 import java.util.Map;
 
 @Mapper
-public interface PositionMapper extends tk.mybatis.mapper.common.Mapper<Position> {
+public interface PositionMapper {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(Position record);
+
+    int insertSelective(Position record);
+
+    Position selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(Position record);
+
+    int updateByPrimaryKey(Position record);
 
     List<Position> findByCodes(List<String> codes);
 
-    List<Position> selectByDepartment(Map<String, Object> params);
+    List<Position> find(Position position);
 
-    List<Position> selectByParent(Map<String, Object> params);
+    Position selectByCode(Position record);
 }

@@ -1,7 +1,209 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.galaxy.framework.aquarius.mapper.PositionMapper">
+    <resultMap id="BaseResultMap" type="com.galaxy.framework.aquarius.entity.Position">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="department_code" property="departmentCode" jdbcType="VARCHAR"/>
+        <result column="position_code" property="positionCode" jdbcType="VARCHAR"/>
+        <result column="manager" property="manager" jdbcType="BIT"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="created" property="created" jdbcType="TIMESTAMP"/>
+        <result column="modifier" property="modifier" jdbcType="VARCHAR"/>
+        <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
+        <result column="version" property="version" jdbcType="TINYINT"/>
+    </resultMap>
+    <resultMap id="RelationResultMap" type="com.galaxy.framework.aquarius.entity.Position">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="manager" property="manager" jdbcType="BIT"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="created" property="created" jdbcType="TIMESTAMP"/>
+        <result column="modifier" property="modifier" jdbcType="VARCHAR"/>
+        <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
+        <result column="version" property="version" jdbcType="TINYINT"/>
+        <association property="position" column="position_code"
+                     javaType="com.galaxy.framework.aquarius.entity.Position">
+            <id column="position_code" property="code" jdbcType="BIGINT"/>
+            <result column="position_name" property="name" jdbcType="VARCHAR"/>
+        </association>
+        <association property="department" column="department_code"
+                     javaType="com.galaxy.framework.aquarius.entity.Department">
+            <id column="department_code" property="code" jdbcType="VARCHAR"/>
+            <result column="department_name" property="name" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, code, name, department_code, position_code, manager, status, creator, created,
+        modifier, modified, version
+    </sql>
+
+    <sql id="Relation_Column_List">
+        t1.id, t1.code, t1.name, t1.manager, t1.status, t1.creator, t1.created, t1.modifier,
+        t1.modified, t1.version, t2.code AS position_code, t2.name AS position_name,
+        t3.code AS department_code, t3.name AS department_name
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from sys_position
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.galaxy.framework.aquarius.entity.Position">
+        insert into sys_position (id, code, name,
+        department_code, position_code, manager,
+        status, creator, created,
+        modifier, modified, version
+        )
+        values (#{id,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+        #{departmentCode,jdbcType=VARCHAR}, #{positionCode,jdbcType=VARCHAR}, #{manager,jdbcType=BIT},
+        #{status,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP},
+        #{modifier,jdbcType=VARCHAR}, #{modified,jdbcType=TIMESTAMP}, #{version,jdbcType=TINYINT}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.galaxy.framework.aquarius.entity.Position">
+        insert into sys_position
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="code != null">
+                code,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="departmentCode != null">
+                department_code,
+            </if>
+            <if test="positionCode != null">
+                position_code,
+            </if>
+            <if test="manager != null">
+                manager,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="created != null">
+                created,
+            </if>
+            <if test="modifier != null">
+                modifier,
+            </if>
+            <if test="modified != null">
+                modified,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="code != null">
+                #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentCode != null">
+                #{departmentCode,jdbcType=VARCHAR},
+            </if>
+            <if test="positionCode != null">
+                #{positionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="manager != null">
+                #{manager,jdbcType=BIT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="created != null">
+                #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifier != null">
+                #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="modified != null">
+                #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.aquarius.entity.Position">
+        update sys_position
+        <set>
+            <if test="code != null">
+                code = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentCode != null">
+                department_code = #{departmentCode,jdbcType=VARCHAR},
+            </if>
+            <if test="positionCode != null">
+                position_code = #{positionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="manager != null">
+                manager = #{manager,jdbcType=BIT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="modified != null">
+                modified = #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                version = #{version,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.aquarius.entity.Position">
+        update sys_position
+        set code = #{code,jdbcType=VARCHAR},
+        name = #{name,jdbcType=VARCHAR},
+        department_code = #{departmentCode,jdbcType=VARCHAR},
+        position_code = #{positionCode,jdbcType=VARCHAR},
+        manager = #{manager,jdbcType=BIT},
+        status = #{status,jdbcType=VARCHAR},
+        creator = #{creator,jdbcType=VARCHAR},
+        created = #{created,jdbcType=TIMESTAMP},
+        modifier = #{modifier,jdbcType=VARCHAR},
+        modified = #{modified,jdbcType=TIMESTAMP},
+        version = #{version,jdbcType=TINYINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 自定义 -->
     <select id="findByCodes" resultType="com.galaxy.framework.aquarius.entity.Position">
         SELECT *
         FROM sys_position WHERE code IN
@@ -9,21 +211,38 @@
             #{item}
         </foreach>
     </select>
-    <select id="selectByDepartment" resultType="com.galaxy.framework.aquarius.entity.Position"
-            parameterType="map">
-        SELECT * FROM sys_position WHERE department_code=#{departmentCode}
+    <select id="find" resultMap="RelationResultMap" parameterType="com.galaxy.framework.aquarius.entity.Position">
+        SELECT
+        <include refid="Relation_Column_List"/>
+        FROM sys_position t1
+        LEFT JOIN sys_position t2 ON t1.position_code = t2.code
+        LEFT JOIN sys_department t3 ON t1.department_code = t3.code
+        WHERE
+        1=1
+        <if test="code != null">
+            AND t1.code=#{code}
+        </if>
+        <if test="departmentCode != null">
+            AND t1.department_code=#{departmentCode}
+        </if>
+        <if test="positionCode != null">
+            AND t1.position_code=#{positionCode}
+        </if>
         <if test="status != null">
-            AND status=#{status}
+            AND t1.status=#{status}
         </if>
     </select>
-    <select id="selectByParent" resultType="com.galaxy.framework.aquarius.entity.Position"
-            parameterType="map">
-        SELECT * FROM sys_position WHERE parent_code IN
-        <foreach item="item" index="index" collection="parentCodes" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+
+    <select id="selectByCode" resultMap="RelationResultMap"
+            parameterType="com.galaxy.framework.aquarius.entity.Position">
+        SELECT
+        <include refid="Relation_Column_List"/>
+        FROM sys_position t1
+        LEFT JOIN sys_position t2 ON t1.position_code = t2.code
+        LEFT JOIN sys_department t3 ON t1.department_code = t3.code
+        WHERE t1.code=#{code}
         <if test="status != null">
-            AND status=#{status}
+            AND t1.status=#{status}
         </if>
     </select>
 </mapper>

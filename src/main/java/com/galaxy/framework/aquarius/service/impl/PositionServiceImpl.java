@@ -9,6 +9,9 @@ import com.galaxy.framework.pisces.exception.db.InsertException;
 import com.galaxy.framework.pisces.exception.db.UpdateException;
 import com.galaxy.framework.pisces.exception.db.VersionException;
 import com.galaxy.framework.pisces.exception.rule.NotEmptyException;
+import com.github.pagehelper.ISelect;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class PositionServiceImpl extends CrudServiceImpl<Position, Long> implements PositionService {
+public class PositionServiceImpl implements PositionService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -33,6 +36,38 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
 
     @Autowired
     private SequenceService redisSequenceService;
+
+    @Override
+    public Position insert(Position var) {
+        try {
+            positionMapper.insert(var);
+            return var;
+        } catch (Exception e) {
+            throw new InsertException();
+        }
+    }
+
+    @Override
+    public Position update(Position var) {
+        try {
+            int cnt = positionMapper.updateByPrimaryKey(var);
+            if (cnt == 0) {
+                throw new VersionException();
+            }
+            return var;
+        } catch (Exception e) {
+            throw new UpdateException();
+        }
+    }
+
+    @Override
+    public int delete(Long id) {
+        try {
+            return positionMapper.deleteByPrimaryKey(id);
+        } catch (Exception e) {
+            throw new DeleteException();
+        }
+    }
 
     @Transactional
     @Override
@@ -45,7 +80,7 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
                             Position position = vars.get(i);
                             preparedStatement.setString(1, position.getCode());
                             preparedStatement.setString(2, position.getName());
-                            preparedStatement.setString(3, position.getParentCode());
+                            preparedStatement.setString(3, position.getPositionCode());
                             preparedStatement.setString(4, position.getDepartmentCode());
                             preparedStatement.setString(5, position.getStatus());
                             preparedStatement.setString(6, position.getCreator());
@@ -71,7 +106,7 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
                         public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
                             Position position = vars.get(i);
                             preparedStatement.setString(1, position.getName());
-                            preparedStatement.setString(2, position.getParentCode());
+                            preparedStatement.setString(2, position.getPositionCode());
                             preparedStatement.setString(3, position.getDepartmentCode());
                             preparedStatement.setString(4, position.getStatus());
                             preparedStatement.setString(5, position.getModifier());
@@ -129,7 +164,7 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
         Position query = new Position();
         query.setCode(code);
         query.setStatus(status);
-        return positionMapper.selectOne(query);
+        return positionMapper.selectByCode(query);
     }
 
     @Override
@@ -147,10 +182,7 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
     @Transactional
     @Override
     public void deleteByCode(List<String> codes) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("parentCodes", codes);
-        params.put("status", "启用");
-        List<Position> positions = selectByParent(params);
+        List<Position> positions = positionMapper.findByCodes(codes);
         if (!positions.isEmpty()) {
             throw new NotEmptyException("存在启用的下级岗位，请确保下级岗位都已删除");
         }
@@ -172,13 +204,8 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
     }
 
     @Override
-    public List<Position> selectByDepartment(Map<String, Object> params) {
-        return positionMapper.selectByDepartment(params);
-    }
-
-    @Override
-    public List<Position> selectByParent(Map<String, Object> params) {
-        return positionMapper.selectByParent(params);
+    public List<Position> find(Position position) {
+        return positionMapper.find(position);
     }
 
     @Override
@@ -198,5 +225,22 @@ public class PositionServiceImpl extends CrudServiceImpl<Position, Long> impleme
         } catch (Exception e) {
             throw new UpdateException();
         }
+    }
+
+    @Override
+    public PageInfo<Position> page(String departmentCode, int pageNo, int pageSize) {
+        PageInfo<Position> pageInfo = PageHelper.startPage(pageNo, pageSize).doSelectPageInfo(new ISelect() {
+            @Override
+            public void doSelect() {
+                Map<String, Object> params = new HashMap<>();
+                if (!StringUtils.isEmpty(departmentCode)) {
+                    params.put("departmentCode", departmentCode);
+                }
+                Position query = new Position();
+                query.setDepartmentCode(departmentCode);
+                find(query);
+            }
+        });
+        return pageInfo;
     }
 }

@@ -7,7 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 @Mapper
-public interface DepartmentMapper extends tk.mybatis.mapper.common.Mapper<Department> {
+public interface DepartmentMapper {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(Department record);
+
+    int insertSelective(Department record);
+
+    Department selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(Department record);
+
+    int updateByPrimaryKey(Department record);
+
     List<Department> selectByFullPath(String fullPath);
 
     Department selectByCode(Department department);

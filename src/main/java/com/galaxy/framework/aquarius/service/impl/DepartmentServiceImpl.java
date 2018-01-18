@@ -8,10 +8,7 @@ import com.galaxy.framework.aquarius.service.DepartmentService;
 import com.galaxy.framework.aquarius.service.PositionService;
 import com.galaxy.framework.aquarius.service.SequenceService;
 import com.galaxy.framework.aquarius.service.UserService;
-import com.galaxy.framework.pisces.exception.db.DeleteException;
-import com.galaxy.framework.pisces.exception.db.InsertException;
-import com.galaxy.framework.pisces.exception.db.UpdateException;
-import com.galaxy.framework.pisces.exception.db.VersionException;
+import com.galaxy.framework.pisces.exception.db.*;
 import com.galaxy.framework.pisces.exception.rule.NotEmptyException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +27,7 @@ import java.util.Map;
 @Slf4j
 @Transactional
 @Service
-public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> implements DepartmentService {
+public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -48,16 +45,48 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
     private UserService userService;
 
     @Override
+    public Department insert(Department var) {
+        try {
+            departmentMapper.insert(var);
+            return var;
+        } catch (Exception e) {
+            throw new InsertException();
+        }
+    }
+
+    @Override
+    public Department update(Department department) {
+        try {
+            int cnt = departmentMapper.updateByPrimaryKey(department);
+            if (cnt == 0) {
+                throw new VersionException();
+            }
+            return department;
+        } catch (Exception e) {
+            throw new UpdateException();
+        }
+    }
+
+    @Override
+    public int delete(Long id) {
+        try {
+            return departmentMapper.deleteByPrimaryKey(id);
+        } catch (Exception e) {
+            throw new DeleteException();
+        }
+    }
+
+    @Override
     public void insert(List<Department> vars) {
         try {
-            jdbcTemplate.batchUpdate("INSERT INTO sys_department(code,name,parent_code,full_path,full_name,status,created,creator,version) VALUES (?,?,?,?,?,?,now(),?,1)",
+            jdbcTemplate.batchUpdate("INSERT INTO sys_department(code,name,department_code,full_path,full_name,status,created,creator,version) VALUES (?,?,?,?,?,?,now(),?,1)",
                     new BatchPreparedStatementSetter() {
                         @Override
                         public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
                             Department department = vars.get(i);
                             preparedStatement.setString(1, department.getCode());
                             preparedStatement.setString(2, department.getName());
-                            preparedStatement.setString(3, department.getParentCode());
+                            preparedStatement.setString(3, department.getDepartmentCode());
                             preparedStatement.setString(4, department.getFullPath());
                             preparedStatement.setString(5, department.getFullName());
                             preparedStatement.setString(6, department.getStatus());
@@ -78,7 +107,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
     public void update(List<Department> vars) {
         int[] arrays;
         try {
-            arrays = jdbcTemplate.batchUpdate("UPDATE sys_department SET name=?,full_path=?,full_name=?,parent_code=?,status=?,modifier=?,modified=now(),version=version+1 WHERE id=? AND version=?",
+            arrays = jdbcTemplate.batchUpdate("UPDATE sys_department SET name=?,full_path=?,full_name=?,department_code=?,status=?,modifier=?,modified=now(),version=version+1 WHERE id=? AND version=?",
                     new BatchPreparedStatementSetter() {
                         @Override
                         public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
@@ -86,7 +115,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
                             preparedStatement.setString(1, department.getName());
                             preparedStatement.setString(2, department.getFullPath());
                             preparedStatement.setString(3, department.getFullName());
-                            preparedStatement.setString(4, department.getParentCode());
+                            preparedStatement.setString(4, department.getDepartmentCode());
                             preparedStatement.setString(5, department.getStatus());
                             preparedStatement.setString(6, department.getModifier());
                             preparedStatement.setLong(7, department.getId());
@@ -145,12 +174,16 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
         if (!StringUtils.isEmpty(department.getCode())) {
             Department exist = selectByCode(department.getCode(), "启用");
             department.setId(exist.getId());
-            if (!StringUtils.pathEquals(exist.getParentCode(), department.getParentCode())) { // 迁移到新的部门下，修改自本节点起以下所有节点的路径
-                Department parent = selectByCode(department.getParentCode(), "启用"); // 新的上级组织
+            if (!StringUtils.pathEquals(exist.getDepartmentCode(), department.getDepartmentCode())) { // 迁移到新的部门下，修改自本节点起以下所有节点的路径
+                Department parent = selectByCode(department.getDepartmentCode(), "启用"); // 新的上级组织
+
+                department.setFullName(parent.getFullName() + "-" + department.getName()); // 将全路径名称用新的替换掉旧的
+                department.setFullPath(parent.getFullPath() + "-" + department.getCode()); // 将全路径名称用新的替换掉旧的
+
                 List<Department> departments = selectByFullPath(exist.getFullPath()); // 根据旧路径找到所有需要变更的部门
                 departments.forEach(dept -> {
-                    dept.setFullName(dept.getFullName().replace(exist.getFullName(), parent.getFullName())); // 将全路径名称用新的替换掉旧的
-                    dept.setFullPath(dept.getFullPath().replace(exist.getFullPath(), parent.getFullPath())); // 将全路径名称用新的替换掉旧的
+                    dept.setFullName(parent.getFullName() + "-" + dept.getName()); // 将全路径名称用新的替换掉旧的
+                    dept.setFullPath(parent.getFullPath() + "-" + dept.getCode()); // 将全路径名称用新的替换掉旧的
                 });
                 update(departments);
                 // 更新新上级的parent状态
@@ -158,7 +191,7 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
                 update(parent);
 
                 // 查找旧的上级，并判断是否更新parent状态
-                Department oldParent = selectByCode(exist.getParentCode(), "启用"); // 新的上级组织
+                Department oldParent = selectByCode(exist.getDepartmentCode(), "启用"); // 新的上级组织
                 departments = selectByFullPath(oldParent.getFullPath());
                 if (departments.isEmpty()) { // 旧有上级已无下级部门，需要更新parent状态
                     oldParent.setParent(false);
@@ -185,11 +218,11 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
             update(department);
         } else {
             department.setCode(redisSequenceService.generate(Department.class.getName()));
-            if (StringUtils.isEmpty(department.getParentCode())) { // 创建根节点
+            if (StringUtils.isEmpty(department.getDepartmentCode())) { // 创建根节点
                 department.setFullPath(department.getCode());
                 department.setFullName(department.getName());
             } else {
-                Department parent = selectByCode(department.getParentCode(), "启用");
+                Department parent = selectByCode(department.getDepartmentCode(), "启用");
                 department.setFullPath(parent.getFullPath() + "-" + department.getCode());
                 department.setFullName(parent.getFullName() + "-" + department.getName());
                 parent.setParent(true);
@@ -222,6 +255,10 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
 
     @Override
     public int deleteByCode(String code) {
+        Department query = new Department();
+        query.setCode(code);
+        query.setStatus("启用");
+        Department department = departmentMapper.selectByCode(query);
         Map<String, Object> params = new HashMap<>();
         params.put("parentCode", code);
         params.put("status", "启用");
@@ -229,23 +266,47 @@ public class DepartmentServiceImpl extends CrudServiceImpl<Department, Long> imp
         if (!departments.isEmpty()) {
             throw new NotEmptyException("存在启用的下级部门，请确保下级部门都已删除");
         }
-        List<Position> positions = positionService.selectByDepartment(params);
+        Position positionQuery = new Position();
+        positionQuery.setDepartmentCode(code);
+        positionQuery.setStatus("启用");
+        List<Position> positions = positionService.find(positionQuery);
         if (!positions.isEmpty()) {
             throw new NotEmptyException("存在启用的岗位，请确保该部门下的岗位已删除");
         }
-        List<User> users = userService.selectByDepartment(params);
+        User userQuery = new User();
+        userQuery.setDepartmentCode(code);
+        userQuery.setStatus("启用");
+        List<User> users = userService.find(userQuery);
         if (!users.isEmpty()) {
             throw new NotEmptyException("存在启用的人员，请确保该部门下的人员已删除");
         }
-
-        return departmentMapper.deleteByCode(code);
+        int cnt = departmentMapper.deleteByCode(code);
+        params.put("parentCode", department.getDepartmentCode());
+        params.put("status", "启用");
+        departments = departmentMapper.selectAllByParent(params);
+        if (departments.isEmpty()) {
+            query.setCode(department.getDepartmentCode());
+            Department parent = departmentMapper.selectByCode(query);
+            parent.setParent(false);
+            update(parent);
+        }
+        return cnt;
     }
 
     @Override
     public int reuse(String code) {
         Department department = selectByCode(code, "删除");
+        Department parent = selectByCode(department.getDepartmentCode(), "启用");
+        if (parent == null) {
+            throw new DbException("未找到启用的上级岗位");
+        }
         department.setStatus("启用");
         update(department);
+        // 更新父级部门parent为true
+        if (!parent.isParent()) {
+            parent.setParent(true);
+            update(parent);
+        }
         return 0;
     }
 }

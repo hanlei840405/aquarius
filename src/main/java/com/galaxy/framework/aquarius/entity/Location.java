@@ -3,7 +3,6 @@ package com.galaxy.framework.aquarius.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
@@ -11,7 +10,6 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@Table(name = "sys_location", schema = "system")
 public class Location extends BaseEntity implements Serializable {
 
     private String code;

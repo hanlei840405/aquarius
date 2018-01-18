@@ -4,6 +4,6 @@ import com.galaxy.framework.aquarius.entity.Sequence;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface DbSequenceMapper extends tk.mybatis.mapper.common.Mapper<Sequence> {
+public interface DbSequenceMapper {
     int updateByVersion(Sequence sequence);
 }

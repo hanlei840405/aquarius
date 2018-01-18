@@ -3,12 +3,10 @@ package com.galaxy.framework.aquarius.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Table;
 import java.io.Serializable;
 
 @Setter
 @Getter
-@Table(name = "sys_user", schema = "system")
 public class User extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -6290826770540342881L;
@@ -34,9 +32,13 @@ public class User extends BaseEntity implements Serializable {
     // 离职日期
     private String leaveDay;
 
+    private String headImg;
+
     private String departmentCode;
 
     private String positionCode;
 
-    private String headImg;
+    private Department department;
+
+    private Position position;
 }

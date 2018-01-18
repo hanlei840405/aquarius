@@ -1,35 +1,270 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.galaxy.framework.aquarius.mapper.DepartmentMapper">
-    <select id="selectByFullPath" resultType="com.galaxy.framework.aquarius.entity.Department" parameterType="string">
+    <resultMap id="BaseResultMap" type="com.galaxy.framework.aquarius.entity.Department">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="full_path" property="fullPath" jdbcType="VARCHAR"/>
+        <result column="full_name" property="fullName" jdbcType="VARCHAR"/>
+        <result column="location_code" property="locationCode" jdbcType="VARCHAR"/>
+        <result column="department_code" property="departmentCode" jdbcType="VARCHAR"/>
+        <result column="parent" property="parent" jdbcType="BIT"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="created" property="created" jdbcType="TIMESTAMP"/>
+        <result column="modifier" property="modifier" jdbcType="VARCHAR"/>
+        <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
+        <result column="version" property="version" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <resultMap id="RelationResultMap" type="com.galaxy.framework.aquarius.entity.Department">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="full_path" property="fullPath" jdbcType="VARCHAR"/>
+        <result column="full_name" property="fullName" jdbcType="VARCHAR"/>
+        <result column="parent" property="parent" jdbcType="BIT"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="created" property="created" jdbcType="TIMESTAMP"/>
+        <result column="modifier" property="modifier" jdbcType="VARCHAR"/>
+        <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
+        <result column="version" property="version" jdbcType="TINYINT"/>
+        <result column="location_code" property="locationCode" jdbcType="VARCHAR"/>
+        <result column="department_code" property="departmentCode" jdbcType="VARCHAR"/>
+        <association property="department" column="department_code"
+                     javaType="com.galaxy.framework.aquarius.entity.Department">
+            <id column="department_code" property="code" jdbcType="BIGINT"/>
+            <result column="department_name" property="name" jdbcType="VARCHAR"/>
+        </association>
+        <association property="location" column="location_code"
+                     javaType="com.galaxy.framework.aquarius.entity.Location">
+            <id column="location_code" property="code" jdbcType="VARCHAR"/>
+            <result column="location_name" property="name" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, code, name, full_path, full_name, location_code, department_code, parent, status,
+        creator, created, modifier, modified, version
+    </sql>
+
+    <sql id="Relation_Column_List">
+        t1.id, t1.code, t1.name, t1.full_path, t1.full_name, t1.parent, t1.status, t1.creator,
+        t1.created, t1.modifier, t1.modified, t1.version, t2.code AS department_code,
+        t2.name AS department_name, t3.code AS location_code, t3.name AS location_name
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_department
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from sys_department
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.galaxy.framework.aquarius.entity.Department">
+        insert into sys_department (id, code, name,
+        full_path, full_name, location_code,
+        department_code, parent, status,
+        creator, created, modifier,
+        modified, version)
+        values (#{id,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+        #{fullPath,jdbcType=VARCHAR}, #{fullName,jdbcType=VARCHAR}, #{locationCode,jdbcType=VARCHAR},
+        #{departmentCode,jdbcType=VARCHAR}, #{parent,jdbcType=BIT}, #{status,jdbcType=VARCHAR},
+        #{creator,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR},
+        #{modified,jdbcType=TIMESTAMP}, #{version,jdbcType=TINYINT})
+    </insert>
+    <insert id="insertSelective" parameterType="com.galaxy.framework.aquarius.entity.Department">
+        insert into sys_department
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="code != null">
+                code,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="fullPath != null">
+                full_path,
+            </if>
+            <if test="fullName != null">
+                full_name,
+            </if>
+            <if test="locationCode != null">
+                location_code,
+            </if>
+            <if test="departmentCode != null">
+                department_code,
+            </if>
+            <if test="parent != null">
+                parent,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="created != null">
+                created,
+            </if>
+            <if test="modifier != null">
+                modifier,
+            </if>
+            <if test="modified != null">
+                modified,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="code != null">
+                #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="fullPath != null">
+                #{fullPath,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null">
+                #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="locationCode != null">
+                #{locationCode,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentCode != null">
+                #{departmentCode,jdbcType=VARCHAR},
+            </if>
+            <if test="parent != null">
+                #{parent,jdbcType=BIT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="created != null">
+                #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifier != null">
+                #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="modified != null">
+                #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.aquarius.entity.Department">
+        update sys_department
+        <set>
+            <if test="code != null">
+                code = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="fullPath != null">
+                full_path = #{fullPath,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null">
+                full_name = #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="locationCode != null">
+                location_code = #{locationCode,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentCode != null">
+                department_code = #{departmentCode,jdbcType=VARCHAR},
+            </if>
+            <if test="parent != null">
+                parent = #{parent,jdbcType=BIT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="modified != null">
+                modified = #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                version = #{version,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.aquarius.entity.Department">
+        update sys_department
+        set code = #{code,jdbcType=VARCHAR},
+        name = #{name,jdbcType=VARCHAR},
+        full_path = #{fullPath,jdbcType=VARCHAR},
+        full_name = #{fullName,jdbcType=VARCHAR},
+        location_code = #{locationCode,jdbcType=VARCHAR},
+        department_code = #{departmentCode,jdbcType=VARCHAR},
+        parent = #{parent,jdbcType=BIT},
+        status = #{status,jdbcType=VARCHAR},
+        creator = #{creator,jdbcType=VARCHAR},
+        created = #{created,jdbcType=TIMESTAMP},
+        modifier = #{modifier,jdbcType=VARCHAR},
+        modified = #{modified,jdbcType=TIMESTAMP},
+        version = #{version,jdbcType=TINYINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 自定义 -->
+    <select id="selectByFullPath" resultMap="BaseResultMap" parameterType="string">
         SELECT * FROM sys_department WHERE full_path LIKE CONCAT(#{fullPath}, '%')
     </select>
 
-    <select id="selectAllByStatus" resultType="com.galaxy.framework.aquarius.entity.Department" parameterType="string">
+    <select id="selectAllByStatus" resultMap="BaseResultMap" parameterType="string">
         SELECT * FROM sys_department WHERE status=#{status}
     </select>
 
-    <select id="selectAllOrderByFullPath" resultType="com.galaxy.framework.aquarius.entity.Department">
+    <select id="selectAllOrderByFullPath" resultMap="BaseResultMap">
         SELECT * FROM sys_department ORDER BY full_path
     </select>
 
-    <select id="selectByCode" resultType="com.galaxy.framework.aquarius.entity.Department"
+    <select id="selectByCode" resultMap="RelationResultMap"
             parameterType="com.galaxy.framework.aquarius.entity.Department">
-        SELECT * FROM sys_department WHERE code=#{code}
+        SELECT
+        <include refid="Relation_Column_List"/>
+        FROM sys_department t1
+        LEFT JOIN sys_department t2 ON t1.department_code = t2.code
+        LEFT JOIN sys_location t3 ON t1.location_code = t3.code
+        WHERE t1.code=#{code}
         <if test="status != null">
-            AND status=#{status}
+            AND t1.status=#{status}
         </if>
     </select>
 
-    <select id="selectAllByParent" resultType="com.galaxy.framework.aquarius.entity.Department" parameterType="map">
-        SELECT * FROM sys_department WHERE parent_code=#{parentCode}
+    <select id="selectAllByParent" resultMap="BaseResultMap" parameterType="map">
+        SELECT * FROM sys_department WHERE department_code=#{departmentCode}
         <if test="status != null">
             AND status=#{status}
         </if>
     </select>
 
     <delete id="deleteByCode" parameterType="string">
-      UPDATE sys_department SET status='删除' WHERE code=#{code}
-    </delete>
+    UPDATE sys_department SET status='删除' WHERE code=#{code}
+  </delete>
 </mapper>

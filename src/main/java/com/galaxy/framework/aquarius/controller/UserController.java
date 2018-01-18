@@ -39,7 +39,7 @@ public class UserController {
         query.setName(name);
         query.setDepartmentCode(departmentCode);
         PageHelper.startPage(pageNo, pageSize);
-        List<User> users = userService.select(query);
+        List<User> users = userService.find(query);
         List<UserVo> userVos = users.stream().map(user -> convert(user)).collect(Collectors.toList());
         PageInfo<UserVo> pageInfo = new PageInfo<>(userVos);
         return pageInfo;

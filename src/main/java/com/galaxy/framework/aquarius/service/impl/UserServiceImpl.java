@@ -18,10 +18,10 @@ import org.springframework.util.StringUtils;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
+@Transactional
 @Service
-public class UserServiceImpl extends CrudServiceImpl<User, Long> implements UserService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -32,16 +32,50 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
     @Autowired
     private SequenceService redisSequenceService;
 
+
+    @Override
+    public User selectByCode(String code) {
+        return userMapper.selectByCode(code);
+    }
+
+    @Override
+    public List<User> find(User user) {
+        return userMapper.find(user);
+    }
+
+    @Override
+    public User insert(User user) {
+        try {
+            userMapper.insert(user);
+            return user;
+        } catch (Exception e) {
+            throw new InsertException();
+        }
+    }
+
+    @Override
+    public User update(User user) {
+        try {
+            int cnt = userMapper.updateByPrimaryKey(user);
+            if (cnt == 0) {
+                throw new VersionException();
+            }
+            return user;
+        } catch (Exception e) {
+            throw new UpdateException();
+        }
+    }
+
     @Transactional
     @Override
-    public void insert(List<User> vars) {
+    public void insert(List<User> users) {
         try {
             jdbcTemplate.batchUpdate("INSERT INTO sys_user (code,name,email,mobile,gender,birthday,entryDay,regularDay,leaveDay,position_code,department_code,head_img,status,created,creator,version) " +
                             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,now(),?,1)",
                     new BatchPreparedStatementSetter() {
                         @Override
                         public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
-                            User user = vars.get(i);
+                            User user = users.get(i);
                             preparedStatement.setString(1, user.getCode());
                             preparedStatement.setString(2, user.getName());
                             preparedStatement.setString(3, user.getEmail());
@@ -60,7 +94,7 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
 
                         @Override
                         public int getBatchSize() {
-                            return vars.size();
+                            return users.size();
                         }
                     });
         } catch (Exception e) {
@@ -70,13 +104,13 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
 
     @Transactional
     @Override
-    public void update(List<User> vars) {
+    public void update(List<User> users) {
         try {
             int[] arrays = jdbcTemplate.batchUpdate("UPDATE sys_user SET name=?, email=?, mobile=?, gender=?, birthday=?, entryDay=?, regularDay=?, leaveDay=?, position_code=?, department_code=?, head_img=?, status=?, modified=now(), version=version+1 WHERE id=? AND version=?",
                     new BatchPreparedStatementSetter() {
                         @Override
                         public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
-                            User user = vars.get(i);
+                            User user = users.get(i);
                             preparedStatement.setString(1, user.getName());
                             preparedStatement.setString(2, user.getEmail());
                             preparedStatement.setString(3, user.getMobile());
@@ -95,13 +129,13 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
 
                         @Override
                         public int getBatchSize() {
-                            return vars.size();
+                            return users.size();
                         }
                     });
             StringBuilder sb = new StringBuilder();
             for (int index : arrays) {
                 if (index == 0) { // 因版本不一致更新失败
-                    User user = vars.get(index);
+                    User user = users.get(index);
                     sb.append(user.getName()).append(",");
                 }
             }
@@ -116,18 +150,18 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
 
     @Transactional
     @Override
-    public void delete(List<Long> vars) {
+    public void delete(List<Long> users) {
         try {
             jdbcTemplate.batchUpdate("DELETE FROM sys_user WHERE id=?", new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
-                    Long id = vars.get(i);
+                    Long id = users.get(i);
                     preparedStatement.setLong(1, id);
                 }
 
                 @Override
                 public int getBatchSize() {
-                    return vars.size();
+                    return users.size();
                 }
             });
         } catch (Exception e) {
@@ -136,17 +170,10 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
     }
 
     @Override
-    public User selectByCode(String code, String status) {
-        User query = new User();
-        query.setCode(code);
-        query.setStatus(status);
-        return selectOne(query);
-    }
-
-    @Override
     public User save(User user) {
         if (StringUtils.isEmpty(user.getCode())) { // 新增
             String sequence = redisSequenceService.generate(User.class.getName());
+            user.setCode(sequence);
             insert(user);
         } else { // 更新
             update(user);
@@ -171,15 +198,5 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
         } catch (Exception e) {
             throw new DeleteException();
         }
-    }
-
-    @Override
-    public List<User> selectByDepartment(Map<String, Object> params) {
-        return userMapper.selectByDepartment(params);
-    }
-
-    @Override
-    public List<User> selectByPosition(Map<String, Object> params) {
-        return userMapper.selectByPosition(params);
     }
 }

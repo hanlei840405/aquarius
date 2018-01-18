@@ -7,9 +7,21 @@ import java.util.List;
 import java.util.Map;
 
 @Mapper
-public interface UserMapper extends tk.mybatis.mapper.common.Mapper<User> {
+public interface UserMapper {
+    int deleteByPrimaryKey(Long id);
 
-    List<User> selectByDepartment(Map<String, Object> params);
+    int insert(User record);
 
-    List<User> selectByPosition(Map<String, Object> params);
+    int insertSelective(User record);
+
+    User selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(User record);
+
+    int updateByPrimaryKey(User record);
+
+    User selectByCode(String code);
+
+    List<User> find(User user);
+
 }
