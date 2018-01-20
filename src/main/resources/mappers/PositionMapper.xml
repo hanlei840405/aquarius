@@ -232,14 +232,14 @@
         <if test="departmentCode != null">
             AND t3.code=#{departmentCode}
         </if>
-        <if test="departmentName != null">
-            AND t3.name LIKE concat(#{departmentName},'%')
-        </if>
         <if test="positionCode != null">
             AND t2.code=#{positionCode}
         </if>
         <if test="positionName != null">
             AND t2.name LIKE concat(#{positionName},'%')
+        </if>
+        <if test="departmentName != null">
+            AND t3.name LIKE concat(#{departmentName},'%')
         </if>
         <if test="locationName != null">
             AND t4.name LIKE concat(#{locationName},'%')

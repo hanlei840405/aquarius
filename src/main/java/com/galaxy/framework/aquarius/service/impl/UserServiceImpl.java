@@ -8,6 +8,8 @@ import com.galaxy.framework.pisces.exception.db.DeleteException;
 import com.galaxy.framework.pisces.exception.db.InsertException;
 import com.galaxy.framework.pisces.exception.db.UpdateException;
 import com.galaxy.framework.pisces.exception.db.VersionException;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +20,7 @@ import org.springframework.util.StringUtils;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @Transactional
 @Service
@@ -39,8 +42,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> find(User user) {
-        return userMapper.find(user);
+    public List<User> find(Map<String, Object> search) {
+        return userMapper.find(search);
     }
 
     @Override
@@ -198,5 +201,11 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new DeleteException();
         }
+    }
+
+    @Override
+    public PageInfo<User> page(Map<String, Object> search, Integer pageNo, Integer pageSize) {
+        PageInfo<User> pageInfo = PageHelper.startPage(pageNo, pageSize).doSelectPageInfo(() -> find(search));
+        return pageInfo;
     }
 }

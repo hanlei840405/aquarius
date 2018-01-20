@@ -23,8 +23,8 @@ public class PositionController {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping("/findAll")
-    public PageInfo<Position> findAll(String search, Integer pageNo, Integer pageSize) throws IOException {
+    @RequestMapping("/page")
+    public PageInfo<Position> page(String search, Integer pageNo, Integer pageSize) throws IOException {
 
         PageInfo<Position> pageInfo = positionService.page(objectMapper.readValue(search, new TypeReference<Map<String, Object>>() {
         }), pageNo, pageSize);
@@ -32,8 +32,8 @@ public class PositionController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping("/parents")
-    public List<Position> parents(String departmentCode) {
+    @RequestMapping("/findAll")
+    public List<Position> findAll(String departmentCode) {
         Map<String, Object> search = new HashMap<>();
         search.put("departmentCode", departmentCode);
         search.put("status", "启用");
@@ -52,7 +52,7 @@ public class PositionController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/delete")
     public int delete(@RequestBody Position position) {
-        Position exist = positionService.selectByCode(position.getCode(), position.getStatus());
+        Position exist = positionService.selectByCode(position.getCode());
         exist.setStatus("删除");
         positionService.update(exist);
         return 200;

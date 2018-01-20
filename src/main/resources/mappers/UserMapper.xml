@@ -44,9 +44,15 @@
                      javaType="com.galaxy.framework.aquarius.entity.Department">
             <id column="department_code" property="code" jdbcType="BIGINT"/>
             <result column="department_name" property="name" jdbcType="VARCHAR"/>
+            <result column="location_code" property="locationCode" jdbcType="VARCHAR"/>
+            <association property="location" column="location_code"
+                         javaType="com.galaxy.framework.aquarius.entity.Location">
+                <id column="location_code" property="code" jdbcType="VARCHAR"/>
+                <result column="location_name" property="name" jdbcType="VARCHAR"/>
+            </association>
         </association>
         <association property="position" column="position_code"
-                     javaType="com.galaxy.framework.aquarius.entity.Location">
+                     javaType="com.galaxy.framework.aquarius.entity.Position">
             <id column="position_code" property="code" jdbcType="VARCHAR"/>
             <result column="position_name" property="name" jdbcType="VARCHAR"/>
         </association>
@@ -60,7 +66,7 @@
     <sql id="Relation_Column_List">
         t1.id, t1.code, t1.name, t1.email, t1.mobile, t1.gender, t1.birthday, t1.entry_day, t1.regular_day, t1.leave_day,
         t1.head_img, t1.status, t1.creator, t1.created, t1.modifier, t1.modified, t1.version, t2.code AS department_code,
-        t2.name AS position_name, t3.code AS position_code, t3.name AS position_name
+        t2.name AS department_name, t3.code AS position_code, t3.name AS position_name, t4.code AS location_code, t4.name AS location_name
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -305,12 +311,13 @@
         t1.code=#{code}
     </select>
     <select id="find" resultMap="RelationResultMap"
-            parameterType="com.galaxy.framework.aquarius.entity.User">
+            parameterType="map">
         SELECT
         <include refid="Relation_Column_List"/>
         FROM sys_user t1
         LEFT JOIN sys_department t2 on t1.department_code=t2.code
         LEFT JOIN sys_position t3 on t1.position_code=t3.code
+        LEFT JOIN sys_location t4 on t2.location_code=t4.code
         WHERE
         1=1
         <if test="code != null">
@@ -324,6 +331,15 @@
         </if>
         <if test="departmentCode != null">
             AND t1.department_code=#{departmentCode}
+        </if>
+        <if test="departmentName != null">
+            AND t2.name LIKE concat(#{departmentName},'%')
+        </if>
+        <if test="positionName != null">
+            AND t3.name LIKE concat(#{positionName},'%')
+        </if>
+        <if test="locationName != null">
+            AND t4.name LIKE concat(#{locationName},'%')
         </if>
         <if test="status != null">
             AND t1.status=#{status}

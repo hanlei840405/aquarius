@@ -22,6 +22,6 @@ public interface UserMapper {
 
     User selectByCode(String code);
 
-    List<User> find(User user);
+    List<User> find(Map<String, Object> search);
 
 }

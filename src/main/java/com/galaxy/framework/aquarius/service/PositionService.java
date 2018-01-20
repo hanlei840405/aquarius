@@ -20,7 +20,7 @@ public interface PositionService {
 
     void delete(List<Long> ids);
 
-    Position selectByCode(String code, String status);
+    Position selectByCode(String code);
 
     Position save(Position position);
 

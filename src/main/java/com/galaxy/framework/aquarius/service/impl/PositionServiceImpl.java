@@ -155,19 +155,18 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public Position selectByCode(String code, String status) {
+    public Position selectByCode(String code) {
         if (StringUtils.isEmpty(code)) {
             return null;
         }
         Position query = new Position();
         query.setCode(code);
-        query.setStatus(status);
         return positionMapper.selectByCode(query);
     }
 
     @Override
     public Position save(Position position) {
-        Position exist = selectByCode(position.getCode(), "启用");
+        Position exist = selectByCode(position.getCode());
         if (exist != null) { // 更新
             update(position);
         } else { // 新增

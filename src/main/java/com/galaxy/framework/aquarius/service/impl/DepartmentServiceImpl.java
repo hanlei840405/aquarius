@@ -274,9 +274,9 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new NotEmptyException("存在启用的岗位，请确保该部门下的岗位已删除");
         }
         User userQuery = new User();
-        userQuery.setDepartmentCode(code);
-        userQuery.setStatus("启用");
-        List<User> users = userService.find(userQuery);
+        params.put("departmentCode", code);
+        params.put("status", "启用");
+        List<User> users = userService.find(params);
         if (!users.isEmpty()) {
             throw new NotEmptyException("存在启用的人员，请确保该部门下的人员已删除");
         }
