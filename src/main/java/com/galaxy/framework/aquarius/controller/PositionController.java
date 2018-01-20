@@ -1,12 +1,14 @@
 package com.galaxy.framework.aquarius.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galaxy.framework.aquarius.entity.Position;
-import com.galaxy.framework.aquarius.service.DepartmentService;
 import com.galaxy.framework.aquarius.service.PositionService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,24 +20,24 @@ public class PositionController {
     @Autowired
     private PositionService positionService;
 
-    @Autowired
-    private DepartmentService departmentService;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping("/findAll")
-    public PageInfo<Position> findAll(String departmentCode, Integer pageNo, Integer pageSize) {
-        PageInfo<Position> pageInfo = positionService.page(departmentCode, pageNo, pageSize);
+    public PageInfo<Position> findAll(String search, Integer pageNo, Integer pageSize) throws IOException {
+
+        PageInfo<Position> pageInfo = positionService.page(objectMapper.readValue(search, new TypeReference<Map<String, Object>>() {
+        }), pageNo, pageSize);
         return pageInfo;
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping("/parents")
-    public List<Position> parents(String departmentCode, String status) {
-        Map<String, Object> params = new HashMap<>();
-        Position query = new Position();
-        query.setDepartmentCode(departmentCode);
-        query.setStatus(status);
-        List<Position> positions = positionService.find(query);
+    public List<Position> parents(String departmentCode) {
+        Map<String, Object> search = new HashMap<>();
+        search.put("departmentCode", departmentCode);
+        search.put("status", "启用");
+        List<Position> positions = positionService.find(search);
         return positions;
     }
 
@@ -49,8 +51,10 @@ public class PositionController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/delete")
-    public int delete(@RequestBody List<String> codes) {
-        positionService.deleteByCode(codes);
+    public int delete(@RequestBody Position position) {
+        Position exist = positionService.selectByCode(position.getCode(), position.getStatus());
+        exist.setStatus("删除");
+        positionService.update(exist);
         return 200;
     }
 

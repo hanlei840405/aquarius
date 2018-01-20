@@ -24,11 +24,9 @@ public interface PositionService {
 
     Position save(Position position);
 
-    void deleteByCode(List<String> codes);
-
-    List<Position> find(Position position);
+    List<Position> find(Map<String, Object> params);
 
     void reuse(List<String> codes);
 
-    PageInfo<Position> page(String departmentCode, int pageNo, int pageSize);
+    PageInfo<Position> page(Map<String, Object> params, int pageNo, int pageSize);
 }

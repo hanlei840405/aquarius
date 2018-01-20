@@ -266,10 +266,10 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (!departments.isEmpty()) {
             throw new NotEmptyException("存在启用的下级部门，请确保下级部门都已删除");
         }
-        Position positionQuery = new Position();
-        positionQuery.setDepartmentCode(code);
-        positionQuery.setStatus("启用");
-        List<Position> positions = positionService.find(positionQuery);
+        params.clear();
+        params.put("departmentCode", code);
+        params.put("status", "启用");
+        List<Position> positions = positionService.find(params);
         if (!positions.isEmpty()) {
             throw new NotEmptyException("存在启用的岗位，请确保该部门下的岗位已删除");
         }

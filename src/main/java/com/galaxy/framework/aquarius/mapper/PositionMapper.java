@@ -20,9 +20,7 @@ public interface PositionMapper {
 
     int updateByPrimaryKey(Position record);
 
-    List<Position> findByCodes(List<String> codes);
-
-    List<Position> find(Position position);
+    List<Position> find(Map<String,Object> params);
 
     Position selectByCode(Position record);
 }

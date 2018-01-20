@@ -8,7 +8,6 @@ import com.galaxy.framework.pisces.exception.db.DeleteException;
 import com.galaxy.framework.pisces.exception.db.InsertException;
 import com.galaxy.framework.pisces.exception.db.UpdateException;
 import com.galaxy.framework.pisces.exception.db.VersionException;
-import com.galaxy.framework.pisces.exception.rule.NotEmptyException;
 import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -21,7 +20,6 @@ import org.springframework.util.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -179,33 +177,9 @@ public class PositionServiceImpl implements PositionService {
         return position;
     }
 
-    @Transactional
     @Override
-    public void deleteByCode(List<String> codes) {
-        List<Position> positions = positionMapper.findByCodes(codes);
-        if (!positions.isEmpty()) {
-            throw new NotEmptyException("存在启用的下级岗位，请确保下级岗位都已删除");
-        }
-        try {
-            jdbcTemplate.batchUpdate("UPDATE sys_position SET status='删除' WHERE code=?", new BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
-                    preparedStatement.setString(1, codes.get(i));
-                }
-
-                @Override
-                public int getBatchSize() {
-                    return codes.size();
-                }
-            });
-        } catch (Exception e) {
-            throw new DeleteException();
-        }
-    }
-
-    @Override
-    public List<Position> find(Position position) {
-        return positionMapper.find(position);
+    public List<Position> find(Map<String, Object> params) {
+        return positionMapper.find(params);
     }
 
     @Override
@@ -228,19 +202,8 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public PageInfo<Position> page(String departmentCode, int pageNo, int pageSize) {
-        PageInfo<Position> pageInfo = PageHelper.startPage(pageNo, pageSize).doSelectPageInfo(new ISelect() {
-            @Override
-            public void doSelect() {
-                Map<String, Object> params = new HashMap<>();
-                if (!StringUtils.isEmpty(departmentCode)) {
-                    params.put("departmentCode", departmentCode);
-                }
-                Position query = new Position();
-                query.setDepartmentCode(departmentCode);
-                find(query);
-            }
-        });
+    public PageInfo<Position> page(Map<String, Object> search, int pageNo, int pageSize) {
+        PageInfo<Position> pageInfo = PageHelper.startPage(pageNo, pageSize).doSelectPageInfo(() -> find(search));
         return pageInfo;
     }
 }
