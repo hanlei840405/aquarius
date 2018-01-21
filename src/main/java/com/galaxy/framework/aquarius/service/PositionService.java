@@ -26,7 +26,7 @@ public interface PositionService {
 
     List<Position> find(Map<String, Object> params);
 
-    void reuse(List<String> codes);
+    List<Position> findByResource(Map<String, Object> params);
 
     PageInfo<Position> page(Map<String, Object> params, int pageNo, int pageSize);
 }

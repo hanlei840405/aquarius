@@ -33,6 +33,8 @@
         <result column="entry_day" property="entryDay" jdbcType="VARCHAR"/>
         <result column="regular_day" property="regularDay" jdbcType="VARCHAR"/>
         <result column="leave_day" property="leaveDay" jdbcType="VARCHAR"/>
+        <result column="department_code" property="departmentCode" jdbcType="VARCHAR"/>
+        <result column="position_code" property="positionCode" jdbcType="VARCHAR"/>
         <result column="head_img" property="headImg" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
         <result column="creator" property="creator" jdbcType="VARCHAR"/>
@@ -307,6 +309,7 @@
         FROM sys_user t1
         LEFT JOIN sys_department t2 on t1.department_code=t2.code
         LEFT JOIN sys_position t3 on t1.position_code=t3.code
+        LEFT JOIN sys_location t4 on t2.location_code=t4.code
         WHERE
         t1.code=#{code}
     </select>

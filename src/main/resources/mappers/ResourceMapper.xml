@@ -1,146 +1,181 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.galaxy.framework.aquarius.mapper.ResourceMapper" >
-    <resultMap id="BaseResultMap" type="com.galaxy.framework.aquarius.entity.Resource" >
-        <id column="id" property="id" jdbcType="BIGINT" />
-        <result column="code" property="code" jdbcType="VARCHAR" />
-        <result column="name" property="name" jdbcType="VARCHAR" />
-        <result column="parent_code" property="parentCode" jdbcType="VARCHAR" />
-        <result column="status" property="status" jdbcType="VARCHAR" />
-        <result column="creator" property="creator" jdbcType="VARCHAR" />
-        <result column="created" property="created" jdbcType="TIMESTAMP" />
-        <result column="modifier" property="modifier" jdbcType="VARCHAR" />
-        <result column="modified" property="modified" jdbcType="TIMESTAMP" />
-        <result column="version" property="version" jdbcType="TINYINT" />
+<mapper namespace="com.galaxy.framework.aquarius.mapper.ResourceMapper">
+    <resultMap id="BaseResultMap" type="com.galaxy.framework.aquarius.entity.Resource">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="resource_code" property="resourceCode" jdbcType="VARCHAR"/>
+        <result column="full_path" property="fullPath" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="created" property="created" jdbcType="TIMESTAMP"/>
+        <result column="modifier" property="modifier" jdbcType="VARCHAR"/>
+        <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
+        <result column="version" property="version" jdbcType="TINYINT"/>
     </resultMap>
-    <sql id="Base_Column_List" >
-        id, code, name, parent_code, status, creator, created, modifier, modified, version
+
+    <resultMap id="RelationResultMap" type="com.galaxy.framework.aquarius.entity.Resource">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="resource_code" property="resourceCode" jdbcType="VARCHAR"/>
+        <result column="full_path" property="fullPath" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="created" property="created" jdbcType="TIMESTAMP"/>
+        <result column="modifier" property="modifier" jdbcType="VARCHAR"/>
+        <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
+        <result column="version" property="version" jdbcType="TINYINT"/>
+        <association property="resource" column="resource_code"
+                     javaType="com.galaxy.framework.aquarius.entity.Resource">
+            <id column="resource_code" property="code" jdbcType="BIGINT"/>
+            <result column="resource_name" property="name" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, code, name, resource_code, full_path, status, creator, created, modifier, modified, version
     </sql>
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+
+    <sql id="Relation_Column_List">
+        t1.id, t1.code, t1.name, t1.full_path, t1.status, t1.creator, t1.created, t1.modifier, t1.modified, t1.version, t2.code AS resource_code, t2.name AS resource_name
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from sys_resource
         where id = #{id,jdbcType=BIGINT}
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from sys_resource
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.galaxy.framework.aquarius.entity.Resource" >
+    <insert id="insert" parameterType="com.galaxy.framework.aquarius.entity.Resource">
         insert into sys_resource (id, code, name,
-        parent_code, status, creator,
+        resource_code, full_path, status, creator,
         created, modifier, modified,
         version)
         values (#{id,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
-        #{parentCode,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR},
-        #{created,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR}, #{modified,jdbcType=TIMESTAMP},
-        #{version,jdbcType=TINYINT})
+        #{resourceCode,jdbcType=VARCHAR}, #{fullPath,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
+        #{creator,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR},
+        #{modified,jdbcType=TIMESTAMP}, #{version,jdbcType=TINYINT})
     </insert>
-    <insert id="insertSelective" parameterType="com.galaxy.framework.aquarius.entity.Resource" >
+    <insert id="insertSelective" parameterType="com.galaxy.framework.aquarius.entity.Resource">
         insert into sys_resource
-        <trim prefix="(" suffix=")" suffixOverrides="," >
-            <if test="id != null" >
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
                 id,
             </if>
-            <if test="code != null" >
+            <if test="code != null">
                 code,
             </if>
-            <if test="name != null" >
+            <if test="name != null">
                 name,
             </if>
-            <if test="parentCode != null" >
-                parent_code,
+            <if test="resourceCode != null">
+                resource_code,
             </if>
-            <if test="status != null" >
+            <if test="fullPath != null">
+                full_path,
+            </if>
+            <if test="status != null">
                 status,
             </if>
-            <if test="creator != null" >
+            <if test="creator != null">
                 creator,
             </if>
-            <if test="created != null" >
+            <if test="created != null">
                 created,
             </if>
-            <if test="modifier != null" >
+            <if test="modifier != null">
                 modifier,
             </if>
-            <if test="modified != null" >
+            <if test="modified != null">
                 modified,
             </if>
-            <if test="version != null" >
+            <if test="version != null">
                 version,
             </if>
         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="id != null" >
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
-            <if test="code != null" >
+            <if test="code != null">
                 #{code,jdbcType=VARCHAR},
             </if>
-            <if test="name != null" >
+            <if test="name != null">
                 #{name,jdbcType=VARCHAR},
             </if>
-            <if test="parentCode != null" >
-                #{parentCode,jdbcType=VARCHAR},
+            <if test="resourceCode != null">
+                #{resourceCode,jdbcType=VARCHAR},
             </if>
-            <if test="status != null" >
+            <if test="fullPath != null">
+                #{fullPath,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
                 #{status,jdbcType=VARCHAR},
             </if>
-            <if test="creator != null" >
+            <if test="creator != null">
                 #{creator,jdbcType=VARCHAR},
             </if>
-            <if test="created != null" >
+            <if test="created != null">
                 #{created,jdbcType=TIMESTAMP},
             </if>
-            <if test="modifier != null" >
+            <if test="modifier != null">
                 #{modifier,jdbcType=VARCHAR},
             </if>
-            <if test="modified != null" >
+            <if test="modified != null">
                 #{modified,jdbcType=TIMESTAMP},
             </if>
-            <if test="version != null" >
+            <if test="version != null">
                 #{version,jdbcType=TINYINT},
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.aquarius.entity.Resource" >
+    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.aquarius.entity.Resource">
         update sys_resource
-        <set >
-            <if test="code != null" >
+        <set>
+            <if test="code != null">
                 code = #{code,jdbcType=VARCHAR},
             </if>
-            <if test="name != null" >
+            <if test="name != null">
                 name = #{name,jdbcType=VARCHAR},
             </if>
-            <if test="parentCode != null" >
-                parent_code = #{parentCode,jdbcType=VARCHAR},
+            <if test="resourceCode != null">
+                resource_code = #{resourceCode,jdbcType=VARCHAR},
             </if>
-            <if test="status != null" >
+            <if test="fullPath != null">
+                full_path = #{fullPath,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
                 status = #{status,jdbcType=VARCHAR},
             </if>
-            <if test="creator != null" >
+            <if test="creator != null">
                 creator = #{creator,jdbcType=VARCHAR},
             </if>
-            <if test="created != null" >
+            <if test="created != null">
                 created = #{created,jdbcType=TIMESTAMP},
             </if>
-            <if test="modifier != null" >
+            <if test="modifier != null">
                 modifier = #{modifier,jdbcType=VARCHAR},
             </if>
-            <if test="modified != null" >
+            <if test="modified != null">
                 modified = #{modified,jdbcType=TIMESTAMP},
             </if>
-            <if test="version != null" >
+            <if test="version != null">
                 version = #{version,jdbcType=TINYINT},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.aquarius.entity.Resource" >
+    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.aquarius.entity.Resource">
         update sys_resource
         set code = #{code,jdbcType=VARCHAR},
         name = #{name,jdbcType=VARCHAR},
-        parent_code = #{parentCode,jdbcType=VARCHAR},
+        resource_code = #{resourceCode,jdbcType=VARCHAR},
+        full_path = #{fullPath,jdbcType=VARCHAR},
         status = #{status,jdbcType=VARCHAR},
         creator = #{creator,jdbcType=VARCHAR},
         created = #{created,jdbcType=TIMESTAMP},
@@ -151,9 +186,43 @@
     </update>
 
     <!-- 自定义 -->
-    <select id="findByPosition" parameterType="string" resultType="com.galaxy.framework.aquarius.entity.Resource">
-    SELECT t1.* FROM sys_resource t1
-    INNER JOIN sys_resource_position t2 ON t1.resource_code=t2.resource_code
-    WHERE t2.position_code=#{positionCode}
-  </select>
+    <select id="find" parameterType="map" resultMap="RelationResultMap">
+        SELECT
+        <include refid="Relation_Column_List"/>
+        FROM sys_resource t1
+        LEFT JOIN sys_resource t2 ON t1.resource_code=t2.code
+        LEFT JOIN sys_resource_position t3 ON t1.code=t3.resource_code
+        WHERE
+        1=1
+        <if test="code != null">
+            AND t1.code=#{code}
+        </if>
+        <if test="resourceCode != null">
+            AND t2.code=#{resourceCode}
+        </if>
+        <if test="positionCode != null">
+            AND t3.position_code=#{positionCOde}
+        </if>
+        <if test="status != null">
+            AND t1.status=#{status}
+        </if>
+    </select>
+
+    <select id="selectByCode" parameterType="string" resultMap="RelationResultMap">
+        SELECT
+        <include refid="Relation_Column_List"/>
+        FROM sys_resource t1
+        LEFT JOIN sys_resource t2 ON t1.resource_code=t2.code
+        LEFT JOIN sys_resource_position t3 ON t1.code=t3.resource_code
+        WHERE t1.code=#{code}
+        limit 1
+    </select>
+
+    <select id="selectAllOrderByFullPath" resultMap="BaseResultMap">
+        SELECT * FROM sys_resource ORDER BY full_path
+    </select>
+
+    <select id="selectByFullPath" resultMap="BaseResultMap" parameterType="string">
+        SELECT * FROM sys_resource WHERE full_path LIKE CONCAT(#{fullPath}, '%')
+    </select>
 </mapper>

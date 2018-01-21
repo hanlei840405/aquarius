@@ -172,10 +172,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public Department save(Department department) {
         if (!StringUtils.isEmpty(department.getCode())) {
-            Department exist = selectByCode(department.getCode(), "启用");
+            Department exist = selectByCode(department.getCode());
             department.setId(exist.getId());
             if (!StringUtils.pathEquals(exist.getDepartmentCode(), department.getDepartmentCode())) { // 迁移到新的部门下，修改自本节点起以下所有节点的路径
-                Department parent = selectByCode(department.getDepartmentCode(), "启用"); // 新的上级组织
+                Department parent = selectByCode(department.getDepartmentCode()); // 新的上级组织
 
                 department.setFullName(parent.getFullName() + "-" + department.getName()); // 将全路径名称用新的替换掉旧的
                 department.setFullPath(parent.getFullPath() + "-" + department.getCode()); // 将全路径名称用新的替换掉旧的
@@ -191,7 +191,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                 update(parent);
 
                 // 查找旧的上级，并判断是否更新parent状态
-                Department oldParent = selectByCode(exist.getDepartmentCode(), "启用"); // 新的上级组织
+                Department oldParent = selectByCode(exist.getDepartmentCode()); // 新的上级组织
                 departments = selectByFullPath(oldParent.getFullPath());
                 if (departments.isEmpty()) { // 旧有上级已无下级部门，需要更新parent状态
                     oldParent.setParent(false);
@@ -222,7 +222,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                 department.setFullPath(department.getCode());
                 department.setFullName(department.getName());
             } else {
-                Department parent = selectByCode(department.getDepartmentCode(), "启用");
+                Department parent = selectByCode(department.getDepartmentCode());
                 department.setFullPath(parent.getFullPath() + "-" + department.getCode());
                 department.setFullName(parent.getFullName() + "-" + department.getName());
                 parent.setParent(true);
@@ -235,11 +235,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Transactional(readOnly = true)
     @Override
-    public Department selectByCode(String code, String status) {
-        Department query = new Department();
-        query.setCode(code);
-        query.setStatus(status);
-        return departmentMapper.selectByCode(query);
+    public Department selectByCode(String code) {
+        return departmentMapper.selectByCode(code);
     }
 
     @Transactional(readOnly = true)
@@ -255,10 +252,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public int deleteByCode(String code) {
-        Department query = new Department();
-        query.setCode(code);
-        query.setStatus("启用");
-        Department department = departmentMapper.selectByCode(query);
+        Department department = departmentMapper.selectByCode(code);
         Map<String, Object> params = new HashMap<>();
         params.put("parentCode", code);
         params.put("status", "启用");
@@ -273,7 +267,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (!positions.isEmpty()) {
             throw new NotEmptyException("存在启用的岗位，请确保该部门下的岗位已删除");
         }
-        User userQuery = new User();
+        params.clear();
         params.put("departmentCode", code);
         params.put("status", "启用");
         List<User> users = userService.find(params);
@@ -285,8 +279,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         params.put("status", "启用");
         departments = departmentMapper.selectAllByParent(params);
         if (departments.isEmpty()) {
-            query.setCode(department.getDepartmentCode());
-            Department parent = departmentMapper.selectByCode(query);
+            Department parent = departmentMapper.selectByCode(department.getDepartmentCode());
             parent.setParent(false);
             update(parent);
         }
@@ -295,9 +288,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public int reuse(String code) {
-        Department department = selectByCode(code, "删除");
-        Department parent = selectByCode(department.getDepartmentCode(), "启用");
-        if (parent == null) {
+        Department department = selectByCode(code);
+        Department parent = selectByCode(department.getDepartmentCode());
+        if (parent == null || "删除".equals(parent.getStatus())) {
             throw new DbException("未找到启用的上级岗位");
         }
         department.setStatus("启用");
@@ -307,6 +300,6 @@ public class DepartmentServiceImpl implements DepartmentService {
             parent.setParent(true);
             update(parent);
         }
-        return 0;
+        return 200;
     }
 }

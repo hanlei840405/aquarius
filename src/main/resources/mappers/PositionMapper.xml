@@ -250,7 +250,7 @@
     </select>
 
     <select id="selectByCode" resultMap="RelationResultMap"
-            parameterType="com.galaxy.framework.aquarius.entity.Position">
+            parameterType="string">
         SELECT
         <include refid="Relation_Column_List"/>
         FROM sys_position t1
@@ -258,6 +258,18 @@
         LEFT JOIN sys_department t3 ON t1.department_code = t3.code
         LEFT JOIN sys_location t4 ON t3.location_code = t4.code
         WHERE t1.code=#{code}
+        limit 1
+    </select>
+
+    <select id="findByResource" resultMap="BaseResultMap"
+            parameterType="map">
+        SELECT
+        t1.id, t1.code, t1.name, t1.manager, t1.status, t1.creator, t1.created, t1.modifier, t1.modified,
+        t1.version, t1.position_code, t1.department_code
+        FROM sys_position t1
+        INNER JOIN sys_resource_position t2 ON t1.code = t2.position_code
+        WHERE
+        t2.resource_code=#{resourceCode}
         <if test="status != null">
             AND t1.status=#{status}
         </if>

@@ -22,5 +22,7 @@ public interface PositionMapper {
 
     List<Position> find(Map<String,Object> params);
 
-    Position selectByCode(Position record);
+    Position selectByCode(String code);
+
+    List<Position> findByResource(Map<String,Object> params);
 }

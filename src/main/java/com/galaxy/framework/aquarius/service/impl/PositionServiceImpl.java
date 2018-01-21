@@ -8,7 +8,6 @@ import com.galaxy.framework.pisces.exception.db.DeleteException;
 import com.galaxy.framework.pisces.exception.db.InsertException;
 import com.galaxy.framework.pisces.exception.db.UpdateException;
 import com.galaxy.framework.pisces.exception.db.VersionException;
-import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,9 +158,7 @@ public class PositionServiceImpl implements PositionService {
         if (StringUtils.isEmpty(code)) {
             return null;
         }
-        Position query = new Position();
-        query.setCode(code);
-        return positionMapper.selectByCode(query);
+        return positionMapper.selectByCode(code);
     }
 
     @Override
@@ -182,22 +179,8 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public void reuse(List<String> codes) {
-        try {
-            jdbcTemplate.batchUpdate("UPDATE sys_position SET status='启用' WHERE code=?", new BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
-                    preparedStatement.setString(1, codes.get(i));
-                }
-
-                @Override
-                public int getBatchSize() {
-                    return codes.size();
-                }
-            });
-        } catch (Exception e) {
-            throw new UpdateException();
-        }
+    public List<Position> findByResource(Map<String, Object> params) {
+        return positionMapper.findByResource(params);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.galaxy.framework.aquarius.entity.Resource;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ResourceMapper {
@@ -19,5 +20,11 @@ public interface ResourceMapper {
 
     int updateByPrimaryKey(Resource record);
 
-    List<Resource> findByPosition(String positionCode);
+    List<Resource> find(Map<String, Object> search);
+
+    Resource selectByCode(String code);
+
+    List<Resource> selectAllOrderByFullPath();
+
+    List<Resource> selectByFullPath(String fullPath);
 }

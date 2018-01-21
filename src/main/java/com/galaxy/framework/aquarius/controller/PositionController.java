@@ -60,8 +60,10 @@ public class PositionController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/reuse")
-    public int reuse(@RequestBody List<String> codes) {
-        positionService.reuse(codes);
+    public int reuse(@RequestBody Position position) {
+        Position exist = positionService.selectByCode(position.getCode());
+        exist.setStatus("启用");
+        positionService.update(exist);
         return 200;
     }
 }

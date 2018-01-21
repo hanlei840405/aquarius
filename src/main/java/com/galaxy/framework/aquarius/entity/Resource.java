@@ -16,5 +16,9 @@ public class Resource extends BaseEntity implements Serializable {
     private String name;
 
     // 上级资源
-    private String parentCode;
+    private String resourceCode;
+
+    private String fullPath;
+
+    private Resource resource;
 }

@@ -17,12 +17,12 @@ public interface DepartmentService {
     int delete(Long id);
 
     void delete(List<Long> ids);
-    
+
     List<Department> selectByFullPath(String fullPath);
 
     Department save(Department department);
 
-    Department selectByCode(String code, String status);
+    Department selectByCode(String code);
 
     List<Department> selectAllByStatus(String status);
 

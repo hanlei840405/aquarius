@@ -22,7 +22,7 @@ public interface DepartmentMapper {
 
     List<Department> selectByFullPath(String fullPath);
 
-    Department selectByCode(Department department);
+    Department selectByCode(String code);
 
     List<Department> selectAllByStatus(String status);
 
