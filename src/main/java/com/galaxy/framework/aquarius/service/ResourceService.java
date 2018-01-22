@@ -26,4 +26,6 @@ public interface ResourceService {
     int deleteByCode(String code);
 
     int reuse(String code);
+
+    int grant(String code, List<String> creates, List<String> deletes);
 }

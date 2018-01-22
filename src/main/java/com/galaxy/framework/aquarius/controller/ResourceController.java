@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -81,5 +82,14 @@ public class ResourceController {
     @PostMapping("/reuse")
     public int reuse(@RequestBody String code) {
         return resourceService.reuse(code);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/grant")
+    public int grant(@RequestBody Map<String, Object> requestBody) {
+        String code = (String) requestBody.get("code");
+        List<String> creates = (List<String>) requestBody.get("creates");
+        List<String> deletes = (List<String>) requestBody.get("deletes");
+        return resourceService.grant(code, creates, deletes);
     }
 }

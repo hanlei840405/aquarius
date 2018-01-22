@@ -191,4 +191,38 @@ public class ResourceServiceImpl implements ResourceService {
         update(resource);
         return 200;
     }
+
+    @Override
+    public int grant(String code, List<String> creates, List<String> deletes) {
+        jdbcTemplate.batchUpdate("DELETE FROM sys_resource_position WHERE resource_code=? AND position_code=?", new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                String position = deletes.get(i);
+                preparedStatement.setString(1, code);
+                preparedStatement.setString(2, position);
+            }
+
+            @Override
+            public int getBatchSize() {
+                return deletes.size();
+            }
+        });
+        jdbcTemplate.batchUpdate("INSERT INTO sys_resource_position (resource_code, position_code) SELECT ?,? FROM DUAL " +
+                "WHERE NOT EXISTS (SELECT * FROM sys_resource_position WHERE resource_code=? AND position_code=?)", new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                String position = creates.get(i);
+                preparedStatement.setString(1, code);
+                preparedStatement.setString(2, position);
+                preparedStatement.setString(3, code);
+                preparedStatement.setString(4, position);
+            }
+
+            @Override
+            public int getBatchSize() {
+                return creates.size();
+            }
+        });
+        return 200;
+    }
 }
