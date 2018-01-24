@@ -1,27 +1,33 @@
 package com.galaxy.framework.aquarius.controller;
 
-import com.galaxy.framework.pisces.entity.Department;
 import com.galaxy.framework.aquarius.service.DepartmentService;
+import com.galaxy.framework.pisces.entity.Department;
 import com.galaxy.framework.pisces.exception.db.NotExistException;
 import com.galaxy.framework.pisces.exception.rule.EmptyException;
 import com.galaxy.framework.pisces.vo.TreeVo;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/department")
+@Controller
 public class DepartmentController {
 
     @Autowired
     private DepartmentService departmentService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping("/get")
+    @RequestMapping("/department")
+    public String index() {
+        return "system/department";
+    }
+
+    @RequestMapping("/department/get")
     public Department get(String code) {
         Department department = departmentService.selectByCode(code);
         if (department != null) {
@@ -30,8 +36,7 @@ public class DepartmentController {
         throw new NotExistException();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping("/tree")
+    @RequestMapping("/department/tree")
     public List<TreeVo> tree() {
         List<Department> departments = departmentService.selectAllOrderByFullPath();
         List<TreeVo> treeVos = Lists.newArrayList();
@@ -53,15 +58,13 @@ public class DepartmentController {
         return treeVos;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping("/findAll")
+    @RequestMapping("/department/findAll")
     public List<Department> findAll(String status) {
         List<Department> departments = departmentService.selectAllByStatus(status);
         return departments;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/save")
+    @PostMapping("/department/save")
     public Department save(@RequestBody Department department) {
         if (department != null) {
             department.setStatus("启用");
@@ -71,8 +74,7 @@ public class DepartmentController {
         throw new EmptyException();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/delete")
+    @PostMapping("/department/delete")
     public int delete(@RequestBody String code) {
         if (!StringUtils.isEmpty(code)) {
             return departmentService.deleteByCode(code);
@@ -80,8 +82,7 @@ public class DepartmentController {
         throw new EmptyException();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/reuse")
+    @PostMapping("/department/reuse")
     public int reuse(@RequestBody String code) {
         if (!StringUtils.isEmpty(code)) {
             return departmentService.reuse(code);

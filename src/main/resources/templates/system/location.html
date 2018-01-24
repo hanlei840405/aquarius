@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<div th:replace="outer/header"></div>
+<body class="nav-md">
+<div class="container body">
+  <div class="main_container">
+    <div th:replace="outer/left"></div>
+    <div th:replace="outer/top"></div>
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>区域信息</h2>
+                    <div class="clearfix"></div>
+                  </div>
+
+                  <div class="x_content">
+
+                    <div class="table-responsive">
+                      <table class="table table-striped jambo_table">
+                        <thead>
+                          <tr class="headings">
+                            <th class="column-title">编号 </th>
+                            <th class="column-title">名称 </th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          <tr th:class="${itemStat.even}? 'even pointer' : 'odd pointer'" th:each="item,itemStat : ${locations}">
+                            <td class=" " th:text="${item.code}"></td>
+                            <td class=" " th:text="${item.name}"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+  </body>
+<div th:replace="outer/footer"></div>
+</html>

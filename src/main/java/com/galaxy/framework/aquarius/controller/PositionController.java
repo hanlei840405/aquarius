@@ -2,19 +2,21 @@ package com.galaxy.framework.aquarius.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galaxy.framework.pisces.entity.Position;
 import com.galaxy.framework.aquarius.service.PositionService;
+import com.galaxy.framework.pisces.entity.Position;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/position")
+@Controller
 public class PositionController {
 
     @Autowired
@@ -22,8 +24,12 @@ public class PositionController {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping("/page")
+    @RequestMapping("/position")
+    public String index() {
+        return "position";
+    }
+
+    @RequestMapping("/position/page")
     public PageInfo<Position> page(String search, Integer pageNo, Integer pageSize) throws IOException {
 
         PageInfo<Position> pageInfo = positionService.page(objectMapper.readValue(search, new TypeReference<Map<String, Object>>() {
@@ -31,8 +37,7 @@ public class PositionController {
         return pageInfo;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping("/findAll")
+    @RequestMapping("/position/findAll")
     public List<Position> findAll(String departmentCode) {
         Map<String, Object> search = new HashMap<>();
         search.put("departmentCode", departmentCode);
@@ -41,16 +46,14 @@ public class PositionController {
         return positions;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/save")
+    @PostMapping("/position/save")
     public Position save(@RequestBody Position position) {
         position.setStatus("启用");
         positionService.save(position);
         return position;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/delete")
+    @PostMapping("/position/delete")
     public int delete(@RequestBody Position position) {
         Position exist = positionService.selectByCode(position.getCode());
         exist.setStatus("删除");
@@ -58,8 +61,7 @@ public class PositionController {
         return 200;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/reuse")
+    @PostMapping("/position/reuse")
     public int reuse(@RequestBody Position position) {
         Position exist = positionService.selectByCode(position.getCode());
         exist.setStatus("启用");
