@@ -1,6 +1,6 @@
 package com.galaxy.framework.aquarius.service;
 
-import com.galaxy.framework.aquarius.entity.Position;
+import com.galaxy.framework.pisces.entity.Position;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

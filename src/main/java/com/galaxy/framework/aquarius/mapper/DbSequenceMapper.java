@@ -1,6 +1,6 @@
 package com.galaxy.framework.aquarius.mapper;
 
-import com.galaxy.framework.aquarius.entity.Sequence;
+import com.galaxy.framework.pisces.entity.Sequence;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

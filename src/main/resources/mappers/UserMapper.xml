@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.galaxy.framework.aquarius.mapper.UserMapper">
-    <resultMap id="BaseResultMap" type="com.galaxy.framework.aquarius.entity.User">
+    <resultMap id="BaseResultMap" type="com.galaxy.framework.pisces.entity.User">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="code" property="code" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
@@ -22,7 +22,7 @@
         <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
         <result column="version" property="version" jdbcType="TINYINT"/>
     </resultMap>
-    <resultMap id="RelationResultMap" type="com.galaxy.framework.aquarius.entity.User">
+    <resultMap id="RelationResultMap" type="com.galaxy.framework.pisces.entity.User">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="code" property="code" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
@@ -43,18 +43,18 @@
         <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
         <result column="version" property="version" jdbcType="TINYINT"/>
         <association property="department" column="department_code"
-                     javaType="com.galaxy.framework.aquarius.entity.Department">
+                     javaType="com.galaxy.framework.pisces.entity.Department">
             <id column="department_code" property="code" jdbcType="BIGINT"/>
             <result column="department_name" property="name" jdbcType="VARCHAR"/>
             <result column="location_code" property="locationCode" jdbcType="VARCHAR"/>
             <association property="location" column="location_code"
-                         javaType="com.galaxy.framework.aquarius.entity.Location">
+                         javaType="com.galaxy.framework.pisces.entity.Location">
                 <id column="location_code" property="code" jdbcType="VARCHAR"/>
                 <result column="location_name" property="name" jdbcType="VARCHAR"/>
             </association>
         </association>
         <association property="position" column="position_code"
-                     javaType="com.galaxy.framework.aquarius.entity.Position">
+                     javaType="com.galaxy.framework.pisces.entity.Position">
             <id column="position_code" property="code" jdbcType="VARCHAR"/>
             <result column="position_name" property="name" jdbcType="VARCHAR"/>
         </association>
@@ -81,7 +81,7 @@
         delete from sys_user
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.galaxy.framework.aquarius.entity.User">
+    <insert id="insert" parameterType="com.galaxy.framework.pisces.entity.User">
         insert into sys_user (id, code, name,
         email, mobile, gender,
         birthday, entry_day, regular_day,
@@ -97,7 +97,7 @@
         #{created,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR}, #{modified,jdbcType=TIMESTAMP},
         #{version,jdbcType=TINYINT})
     </insert>
-    <insert id="insertSelective" parameterType="com.galaxy.framework.aquarius.entity.User">
+    <insert id="insertSelective" parameterType="com.galaxy.framework.pisces.entity.User">
         insert into sys_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -218,7 +218,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.aquarius.entity.User">
+    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.pisces.entity.User">
         update sys_user
         <set>
             <if test="code != null">
@@ -278,7 +278,7 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.aquarius.entity.User">
+    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.pisces.entity.User">
         update sys_user
         set code = #{code,jdbcType=VARCHAR},
         name = #{name,jdbcType=VARCHAR},

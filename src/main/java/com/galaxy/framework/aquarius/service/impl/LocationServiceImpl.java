@@ -1,6 +1,6 @@
 package com.galaxy.framework.aquarius.service.impl;
 
-import com.galaxy.framework.aquarius.entity.Location;
+import com.galaxy.framework.pisces.entity.Location;
 import com.galaxy.framework.aquarius.mapper.LocationMapper;
 import com.galaxy.framework.aquarius.service.LocationService;
 import com.galaxy.framework.aquarius.service.SequenceService;

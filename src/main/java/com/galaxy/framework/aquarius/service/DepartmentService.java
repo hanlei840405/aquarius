@@ -1,6 +1,6 @@
 package com.galaxy.framework.aquarius.service;
 
-import com.galaxy.framework.aquarius.entity.Department;
+import com.galaxy.framework.pisces.entity.Department;
 
 import java.util.List;
 

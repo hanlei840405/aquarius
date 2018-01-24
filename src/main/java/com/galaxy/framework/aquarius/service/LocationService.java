@@ -1,6 +1,6 @@
 package com.galaxy.framework.aquarius.service;
 
-import com.galaxy.framework.aquarius.entity.Location;
+import com.galaxy.framework.pisces.entity.Location;
 
 import java.util.List;
 

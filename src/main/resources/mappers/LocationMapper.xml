@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.galaxy.framework.aquarius.mapper.LocationMapper">
-    <resultMap id="BaseResultMap" type="com.galaxy.framework.aquarius.entity.Location">
+    <resultMap id="BaseResultMap" type="com.galaxy.framework.pisces.entity.Location">
         <id column="id" property="id" jdbcType="INTEGER"/>
         <result column="code" property="code" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
@@ -25,7 +25,7 @@
         delete from sys_location
         where id = #{id,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" parameterType="com.galaxy.framework.aquarius.entity.Location">
+    <insert id="insert" parameterType="com.galaxy.framework.pisces.entity.Location">
         insert into sys_location (id, code, name,
         status, creator, created,
         modifier, modified, version
@@ -35,7 +35,7 @@
         #{modifier,jdbcType=VARCHAR}, #{modified,jdbcType=TIMESTAMP}, #{version,jdbcType=TINYINT}
         )
     </insert>
-    <insert id="insertSelective" parameterType="com.galaxy.framework.aquarius.entity.Location">
+    <insert id="insertSelective" parameterType="com.galaxy.framework.pisces.entity.Location">
         insert into sys_location
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -96,7 +96,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.aquarius.entity.Location">
+    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.pisces.entity.Location">
         update sys_location
         <set>
             <if test="code != null">
@@ -126,7 +126,7 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.aquarius.entity.Location">
+    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.pisces.entity.Location">
         update sys_location
         set code = #{code,jdbcType=VARCHAR},
         name = #{name,jdbcType=VARCHAR},
@@ -147,7 +147,7 @@
         SELECT * FROM sys_location WHERE status=#{status}
     </select>
 
-    <select id="selectByCode" resultMap="BaseResultMap" parameterType="com.galaxy.framework.aquarius.entity.Location">
+    <select id="selectByCode" resultMap="BaseResultMap" parameterType="com.galaxy.framework.pisces.entity.Location">
         SELECT * FROM sys_location WHERE code=#{code}
         <if test="status!=null">
             AND status=#{status}

@@ -1,6 +1,6 @@
 package com.galaxy.framework.aquarius.service.impl;
 
-import com.galaxy.framework.aquarius.entity.User;
+import com.galaxy.framework.pisces.entity.User;
 import com.galaxy.framework.aquarius.mapper.UserMapper;
 import com.galaxy.framework.aquarius.service.SequenceService;
 import com.galaxy.framework.aquarius.service.UserService;

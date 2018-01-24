@@ -1,7 +1,7 @@
 package com.galaxy.framework.aquarius.service.impl;
 
-import com.galaxy.framework.aquarius.entity.Position;
-import com.galaxy.framework.aquarius.entity.Resource;
+import com.galaxy.framework.pisces.entity.Position;
+import com.galaxy.framework.pisces.entity.Resource;
 import com.galaxy.framework.aquarius.mapper.ResourceMapper;
 import com.galaxy.framework.aquarius.service.PositionService;
 import com.galaxy.framework.aquarius.service.ResourceService;

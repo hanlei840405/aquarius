@@ -1,6 +1,6 @@
 package com.galaxy.framework.aquarius.mapper;
 
-import com.galaxy.framework.aquarius.entity.User;
+import com.galaxy.framework.pisces.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

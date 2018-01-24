@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.galaxy.framework.aquarius.mapper.DbSequenceMapper">
 
-    <update id="updateByVersion" parameterType="com.galaxy.framework.aquarius.entity.Sequence">
+    <update id="updateByVersion" parameterType="com.galaxy.framework.pisces.entity.Sequence">
         UPDATE sys_sequence SET sequence=#{sequence} version=#{version} + 1 WHERE id=#{id} AND version=#{version}
     </update>
 

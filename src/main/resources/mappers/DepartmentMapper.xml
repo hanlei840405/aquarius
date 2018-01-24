@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.galaxy.framework.aquarius.mapper.DepartmentMapper">
-    <resultMap id="BaseResultMap" type="com.galaxy.framework.aquarius.entity.Department">
+    <resultMap id="BaseResultMap" type="com.galaxy.framework.pisces.entity.Department">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="code" property="code" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
@@ -18,7 +18,7 @@
         <result column="version" property="version" jdbcType="TINYINT"/>
     </resultMap>
 
-    <resultMap id="RelationResultMap" type="com.galaxy.framework.aquarius.entity.Department">
+    <resultMap id="RelationResultMap" type="com.galaxy.framework.pisces.entity.Department">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="code" property="code" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
@@ -34,12 +34,12 @@
         <result column="location_code" property="locationCode" jdbcType="VARCHAR"/>
         <result column="department_code" property="departmentCode" jdbcType="VARCHAR"/>
         <association property="department" column="department_code"
-                     javaType="com.galaxy.framework.aquarius.entity.Department">
+                     javaType="com.galaxy.framework.pisces.entity.Department">
             <id column="department_code" property="code" jdbcType="BIGINT"/>
             <result column="department_name" property="name" jdbcType="VARCHAR"/>
         </association>
         <association property="location" column="location_code"
-                     javaType="com.galaxy.framework.aquarius.entity.Location">
+                     javaType="com.galaxy.framework.pisces.entity.Location">
             <id column="location_code" property="code" jdbcType="VARCHAR"/>
             <result column="location_name" property="name" jdbcType="VARCHAR"/>
         </association>
@@ -65,7 +65,7 @@
         delete from sys_department
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.galaxy.framework.aquarius.entity.Department">
+    <insert id="insert" parameterType="com.galaxy.framework.pisces.entity.Department">
         insert into sys_department (id, code, name,
         full_path, full_name, location_code,
         department_code, parent, status,
@@ -77,7 +77,7 @@
         #{creator,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR},
         #{modified,jdbcType=TIMESTAMP}, #{version,jdbcType=TINYINT})
     </insert>
-    <insert id="insertSelective" parameterType="com.galaxy.framework.aquarius.entity.Department">
+    <insert id="insertSelective" parameterType="com.galaxy.framework.pisces.entity.Department">
         insert into sys_department
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -168,7 +168,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.aquarius.entity.Department">
+    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.pisces.entity.Department">
         update sys_department
         <set>
             <if test="code != null">
@@ -213,7 +213,7 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.aquarius.entity.Department">
+    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.pisces.entity.Department">
         update sys_department
         set code = #{code,jdbcType=VARCHAR},
         name = #{name,jdbcType=VARCHAR},

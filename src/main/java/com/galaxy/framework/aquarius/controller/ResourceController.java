@@ -1,6 +1,6 @@
 package com.galaxy.framework.aquarius.controller;
 
-import com.galaxy.framework.aquarius.entity.Resource;
+import com.galaxy.framework.pisces.entity.Resource;
 import com.galaxy.framework.aquarius.service.ResourceService;
 import com.galaxy.framework.pisces.exception.db.NotExistException;
 import com.galaxy.framework.pisces.exception.rule.EmptyException;

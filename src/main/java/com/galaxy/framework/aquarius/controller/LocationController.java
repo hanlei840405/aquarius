@@ -1,6 +1,6 @@
 package com.galaxy.framework.aquarius.controller;
 
-import com.galaxy.framework.aquarius.entity.Location;
+import com.galaxy.framework.pisces.entity.Location;
 import com.galaxy.framework.aquarius.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;

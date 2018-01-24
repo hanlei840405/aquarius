@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.galaxy.framework.aquarius.mapper.ResourceMapper">
-    <resultMap id="BaseResultMap" type="com.galaxy.framework.aquarius.entity.Resource">
+    <resultMap id="BaseResultMap" type="com.galaxy.framework.pisces.entity.Resource">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="code" property="code" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
@@ -15,7 +15,7 @@
         <result column="version" property="version" jdbcType="TINYINT"/>
     </resultMap>
 
-    <resultMap id="RelationResultMap" type="com.galaxy.framework.aquarius.entity.Resource">
+    <resultMap id="RelationResultMap" type="com.galaxy.framework.pisces.entity.Resource">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="code" property="code" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
@@ -28,7 +28,7 @@
         <result column="modified" property="modified" jdbcType="TIMESTAMP"/>
         <result column="version" property="version" jdbcType="TINYINT"/>
         <association property="resource" column="resource_code"
-                     javaType="com.galaxy.framework.aquarius.entity.Resource">
+                     javaType="com.galaxy.framework.pisces.entity.Resource">
             <id column="resource_code" property="code" jdbcType="BIGINT"/>
             <result column="resource_name" property="name" jdbcType="VARCHAR"/>
         </association>
@@ -51,7 +51,7 @@
         delete from sys_resource
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.galaxy.framework.aquarius.entity.Resource">
+    <insert id="insert" parameterType="com.galaxy.framework.pisces.entity.Resource">
         insert into sys_resource (id, code, name,
         resource_code, full_path, status, creator,
         created, modifier, modified,
@@ -61,7 +61,7 @@
         #{creator,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, #{modifier,jdbcType=VARCHAR},
         #{modified,jdbcType=TIMESTAMP}, #{version,jdbcType=TINYINT})
     </insert>
-    <insert id="insertSelective" parameterType="com.galaxy.framework.aquarius.entity.Resource">
+    <insert id="insertSelective" parameterType="com.galaxy.framework.pisces.entity.Resource">
         insert into sys_resource
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -134,7 +134,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.aquarius.entity.Resource">
+    <update id="updateByPrimaryKeySelective" parameterType="com.galaxy.framework.pisces.entity.Resource">
         update sys_resource
         <set>
             <if test="code != null">
@@ -170,7 +170,7 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.aquarius.entity.Resource">
+    <update id="updateByPrimaryKey" parameterType="com.galaxy.framework.pisces.entity.Resource">
         update sys_resource
         set code = #{code,jdbcType=VARCHAR},
         name = #{name,jdbcType=VARCHAR},

@@ -2,11 +2,10 @@ package com.galaxy.framework.aquarius.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galaxy.framework.aquarius.entity.User;
+import com.galaxy.framework.pisces.entity.User;
 import com.galaxy.framework.aquarius.service.UserService;
 import com.galaxy.framework.pisces.exception.db.NotExistException;
 import com.galaxy.framework.pisces.exception.rule.EmptyException;
-import com.galaxy.framework.pisces.util.FileUtil;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -56,7 +55,7 @@ public class UserController {
         } else if (StringUtils.isEmpty(code)) {
             throw new EmptyException("图片所属人为空");
         } else {
-            String flieName = FileUtil.writeFromBase64(headImg, code);
+            String flieName = "";
             User user = userService.selectByCode(code);
             user.setHeadImg(flieName);
             userService.update(user);

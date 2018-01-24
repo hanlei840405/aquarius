@@ -2,7 +2,7 @@ package com.galaxy.framework.aquarius.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galaxy.framework.aquarius.entity.Position;
+import com.galaxy.framework.pisces.entity.Position;
 import com.galaxy.framework.aquarius.service.PositionService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
