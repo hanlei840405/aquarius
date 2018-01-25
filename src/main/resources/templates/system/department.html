@@ -48,43 +48,51 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <form id="departmentForm" class="form-horizontal form-label-left" novalidate="novalidate">
+                            <form id="departmentForm" class="form-horizontal form-label-left" novalidate="novalidate" onsubmit="return false">
                                 <div class="item form-group">
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12" for="location">区域 <span
                                             class="required">*</span>
                                     </label>
                                     <div class="col-md-5 col-sm-5 col-xs-12">
-                                        <select id="location" class="js-example-basic-single" name="location">
-                                            <option th:each="item: ${locations}" th:value="${item.code}"
-                                                    th:text="${item.name}"></option>
+                                        <select id="location" class="form-control col-md-5 col-xs-12" name="location"
+                                                required="required">
                                         </select>
                                     </div>
                                 </div>
                                 <div class="item form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Name <span
-                                            class="required">*</span>
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="departmentCode">上级
+                                        <span
+                                                class="required">*</span>
                                     </label>
                                     <div class="col-md-5 col-sm-5 col-xs-12">
-                                        <input id="name" class="form-control col-md-5 col-xs-12"
-                                               data-validate-length-range="6" data-validate-words="2" name="name"
-                                               required="required" type="text"/>
+                                        <select id="departmentCode" class="form-control col-md-5 col-xs-12"
+                                                name="departmentCode" required="required">
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="item form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Name <span
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">名称 <span
                                             class="required">*</span>
                                     </label>
                                     <div class="col-md-5 col-sm-5 col-xs-12">
-                                        <input id="name" class="form-control col-md-5 col-xs-12"
-                                               data-validate-length-range="6" data-validate-words="2" name="name"
+                                        <input id="name" class="form-control col-md-5 col-xs-12" name="name"
                                                required="required" type="text"/>
                                     </div>
                                 </div>
                                 <div class="ln_solid"></div>
                                 <div class="form-group">
                                     <div class="col-md-6 col-md-offset-3">
-                                        <button type="submit" class="btn btn-primary">Cancel</button>
-                                        <button id="send" type="submit" class="btn btn-success">Submit</button>
+                                        <button id="reset" type="button" class="btn btn-info" onclick="resetForm()">重置
+                                        </button>
+                                        <button id="submit" type="button" class="btn btn-primary"
+                                                onclick="submitForm()">保存
+                                        </button>
+                                        <button id="delete" type="button" class="btn btn-danger"
+                                                onclick="deleteDepartment()">删除
+                                        </button>
+                                        <button id="reuse" type="button" class="btn btn-warn"
+                                                onclick="reuseDepartment()">启用
+                                        </button>
                                     </div>
                                 </div>
                             </form>

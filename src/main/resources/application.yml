@@ -5,13 +5,13 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
     password: 123456
-    url: jdbc:mysql://localhost:3306/system?characterEncoding=UTF-8&useSSL=false
-#    url: jdbc:mysql://192.168.99.100:32768/system?characterEncoding=UTF-8&useSSL=false
-#  redis:
-#    host: eureka-zuul
+#    url: jdbc:mysql://localhost:3306/system?characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://192.168.99.100:32768/system?characterEncoding=UTF-8&useSSL=false
   redis:
-    host: 192.168.99.100
-    port: 32768
+    host: eureka-zuul
+#  redis:
+#    host: 192.168.99.100
+#    port: 32768
 #  rabbitmq:
 #    host: eureka-zuul
 #    username: root

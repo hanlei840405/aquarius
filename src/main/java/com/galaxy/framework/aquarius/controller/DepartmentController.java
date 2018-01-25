@@ -64,13 +64,16 @@ public class DepartmentController {
     @RequestMapping("/department/findAll")
     @ResponseBody
     public List<Department> findAll(String status) {
+        if (StringUtils.isEmpty(status)) {
+            status="启用";
+        }
         List<Department> departments = departmentService.selectAllByStatus(status);
         return departments;
     }
 
     @PostMapping("/department/save")
     @ResponseBody
-    public Department save(@RequestBody Department department) {
+    public Department save(Department department) {
         if (department != null) {
             department.setStatus("启用");
             departmentService.save(department);

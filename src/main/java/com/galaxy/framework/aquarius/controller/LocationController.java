@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -20,5 +21,12 @@ public class LocationController {
         List<Location> locations = locationService.findByStatus("启用");
         model.addAttribute("locations", locations);
         return "system/location";
+    }
+
+    @RequestMapping("/location/findAll")
+    @ResponseBody
+    public List<Location> findAll() {
+        List<Location> locations = locationService.findByStatus("启用");
+        return locations;
     }
 }
