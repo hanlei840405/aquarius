@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class DepartmentController {
     }
 
     @RequestMapping("/department/get")
+    @ResponseBody
     public Department get(String code) {
         Department department = departmentService.selectByCode(code);
         if (department != null) {
@@ -37,6 +39,7 @@ public class DepartmentController {
     }
 
     @RequestMapping("/department/tree")
+    @ResponseBody
     public List<TreeVo> tree() {
         List<Department> departments = departmentService.selectAllOrderByFullPath();
         List<TreeVo> treeVos = Lists.newArrayList();
@@ -59,12 +62,14 @@ public class DepartmentController {
     }
 
     @RequestMapping("/department/findAll")
+    @ResponseBody
     public List<Department> findAll(String status) {
         List<Department> departments = departmentService.selectAllByStatus(status);
         return departments;
     }
 
     @PostMapping("/department/save")
+    @ResponseBody
     public Department save(@RequestBody Department department) {
         if (department != null) {
             department.setStatus("启用");
@@ -75,6 +80,7 @@ public class DepartmentController {
     }
 
     @PostMapping("/department/delete")
+    @ResponseBody
     public int delete(@RequestBody String code) {
         if (!StringUtils.isEmpty(code)) {
             return departmentService.deleteByCode(code);
@@ -83,6 +89,7 @@ public class DepartmentController {
     }
 
     @PostMapping("/department/reuse")
+    @ResponseBody
     public int reuse(@RequestBody String code) {
         if (!StringUtils.isEmpty(code)) {
             return departmentService.reuse(code);

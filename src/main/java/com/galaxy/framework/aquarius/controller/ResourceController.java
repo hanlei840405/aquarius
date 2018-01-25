@@ -11,10 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +29,7 @@ public class ResourceController {
     }
 
     @RequestMapping("/resource/get")
+    @ResponseBody
     public Resource get(String code) {
         Resource resource = resourceService.selectByCode(code);
         if (resource != null) {
@@ -41,6 +39,7 @@ public class ResourceController {
     }
 
     @RequestMapping("/resource/tree")
+    @ResponseBody
     public List<TreeVo> tree() {
         List<Resource> resources = resourceService.selectAllOrderByFullPath();
         List<TreeVo> treeVos = Lists.newArrayList();
@@ -61,12 +60,14 @@ public class ResourceController {
     }
 
     @RequestMapping("/resource/findAll")
+    @ResponseBody
     public List<Resource> findAll() {
         List<Resource> resources = resourceService.find(ImmutableMap.of("status", "启用"));
         return resources;
     }
 
     @PostMapping("/resource/save")
+    @ResponseBody
     public Resource save(@RequestBody Resource resource) {
         if (resource != null) {
             resource.setStatus("启用");
@@ -77,17 +78,20 @@ public class ResourceController {
     }
 
     @PostMapping("/resource/delete")
+    @ResponseBody
     public int delete(@RequestBody String code) {
         return resourceService.deleteByCode(code);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/resource/reuse")
+    @ResponseBody
     public int reuse(@RequestBody String code) {
         return resourceService.reuse(code);
     }
 
     @PostMapping("/resource/grant")
+    @ResponseBody
     public int grant(@RequestBody Map<String, Object> requestBody) {
         String code = (String) requestBody.get("code");
         List<String> creates = (List<String>) requestBody.get("creates");

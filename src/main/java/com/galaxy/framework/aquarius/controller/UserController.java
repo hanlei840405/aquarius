@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class UserController {
     }
 
     @RequestMapping("/user/page")
+    @ResponseBody
     public PageInfo<User> page(String search, Integer pageNo, Integer pageSize) throws IOException {
         PageInfo<User> pageInfo = userService.page(objectMapper.readValue(search, new TypeReference<Map<String, Object>>() {
         }), pageNo, pageSize);
@@ -38,17 +40,20 @@ public class UserController {
     }
 
     @RequestMapping("/user/getByCode")
+    @ResponseBody
     public User getByCode(String code) {
         return userService.selectByCode(code);
     }
 
     @PostMapping("/user/save")
+    @ResponseBody
     public User save(@RequestBody User user) {
         user.setStatus("启用");
         return userService.save(user);
     }
 
     @PostMapping("/user/upload")
+    @ResponseBody
     public int upload(@RequestBody Map<String, String> userInfo) throws IOException {
         String headImg = userInfo.get(("headImg"));
 
@@ -67,6 +72,7 @@ public class UserController {
     }
 
     @PostMapping("/user/delete")
+    @ResponseBody
     public int delete(@RequestBody User user) {
         User exist = userService.selectByCode(user.getCode());
         if (exist != null) {
@@ -79,6 +85,7 @@ public class UserController {
     }
 
     @PostMapping("/user/reuse")
+    @ResponseBody
     public int reuse(@RequestBody User user) {
         User exist = userService.selectByCode(user.getCode());
         if (exist != null) {

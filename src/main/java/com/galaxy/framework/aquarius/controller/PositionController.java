@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ public class PositionController {
     }
 
     @RequestMapping("/position/page")
+    @ResponseBody
     public PageInfo<Position> page(String search, Integer pageNo, Integer pageSize) throws IOException {
 
         PageInfo<Position> pageInfo = positionService.page(objectMapper.readValue(search, new TypeReference<Map<String, Object>>() {
@@ -38,6 +40,7 @@ public class PositionController {
     }
 
     @RequestMapping("/position/findAll")
+    @ResponseBody
     public List<Position> findAll(String departmentCode) {
         Map<String, Object> search = new HashMap<>();
         search.put("departmentCode", departmentCode);
@@ -47,6 +50,7 @@ public class PositionController {
     }
 
     @PostMapping("/position/save")
+    @ResponseBody
     public Position save(@RequestBody Position position) {
         position.setStatus("启用");
         positionService.save(position);
@@ -62,6 +66,7 @@ public class PositionController {
     }
 
     @PostMapping("/position/reuse")
+    @ResponseBody
     public int reuse(@RequestBody Position position) {
         Position exist = positionService.selectByCode(position.getCode());
         exist.setStatus("启用");
