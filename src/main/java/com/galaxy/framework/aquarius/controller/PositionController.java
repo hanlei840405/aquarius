@@ -33,9 +33,10 @@ public class PositionController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping("/findAll")
-    public List<Position> findAll(String departmentCode) {
+    public List<Position> findAll(String departmentCode, String resourceCode) {
         Map<String, Object> search = new HashMap<>();
         search.put("departmentCode", departmentCode);
+        search.put("resourceCode", resourceCode);
         search.put("status", "启用");
         List<Position> positions = positionService.find(search);
         return positions;
