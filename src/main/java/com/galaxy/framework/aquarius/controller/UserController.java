@@ -7,12 +7,15 @@ import com.galaxy.framework.aquarius.service.UserService;
 import com.galaxy.framework.pisces.exception.db.NotExistException;
 import com.galaxy.framework.pisces.exception.rule.EmptyException;
 import com.galaxy.framework.pisces.util.FileUtil;
+import com.galaxy.framework.pisces.vo.aquarius.UserVo;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,6 +28,17 @@ public class UserController {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping("/findAll")
+    public List<User> findAll(String departmentCode, String positionCode, String status) {
+        Map<String, Object> search = Maps.newHashMap();
+        search.put("departmentCode", departmentCode);
+        search.put("positionCode", positionCode);
+        search.put("status", status);
+        List<User> users = userService.find(search);
+        return users;
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping("/page")
     public PageInfo<User> page(String search, Integer pageNo, Integer pageSize) throws IOException {
         PageInfo<User> pageInfo = userService.page(objectMapper.readValue(search, new TypeReference<Map<String, Object>>() {
@@ -34,8 +48,12 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping("/getByCode")
-    public User getByCode(String code) {
-        return userService.selectByCode(code);
+    public UserVo getByCode(String code) {
+        User user = userService.selectByCode(code);
+        UserVo userVo = new UserVo();
+        userVo.setCode(user.getCode());
+        userVo.setName(user.getName());
+        return userVo;
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
