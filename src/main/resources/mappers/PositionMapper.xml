@@ -28,7 +28,7 @@
         <result column="version" property="version" jdbcType="TINYINT"/>
         <association property="position" column="position_code"
                      javaType="com.galaxy.framework.aquarius.entity.Position">
-            <id column="position_code" property="code" jdbcType="BIGINT"/>
+            <id column="position_code" property="code" jdbcType="VARCHAR"/>
             <result column="position_name" property="name" jdbcType="VARCHAR"/>
         </association>
         <association property="department" column="department_code"

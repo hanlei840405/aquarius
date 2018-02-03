@@ -35,7 +35,7 @@
         <result column="department_code" property="departmentCode" jdbcType="VARCHAR"/>
         <association property="department" column="department_code"
                      javaType="com.galaxy.framework.aquarius.entity.Department">
-            <id column="department_code" property="code" jdbcType="BIGINT"/>
+            <id column="department_code" property="code" jdbcType="VARCHAR"/>
             <result column="department_name" property="name" jdbcType="VARCHAR"/>
         </association>
         <association property="location" column="location_code"

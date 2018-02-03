@@ -1,5 +1,6 @@
 package com.galaxy.framework.aquarius.entity;
 
+import com.galaxy.framework.pisces.entity.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 

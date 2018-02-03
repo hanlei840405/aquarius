@@ -44,7 +44,7 @@
         <result column="version" property="version" jdbcType="TINYINT"/>
         <association property="department" column="department_code"
                      javaType="com.galaxy.framework.aquarius.entity.Department">
-            <id column="department_code" property="code" jdbcType="BIGINT"/>
+            <id column="department_code" property="code" jdbcType="VARCHAR"/>
             <result column="department_name" property="name" jdbcType="VARCHAR"/>
             <result column="location_code" property="locationCode" jdbcType="VARCHAR"/>
             <association property="location" column="location_code"

@@ -29,7 +29,7 @@
         <result column="version" property="version" jdbcType="TINYINT"/>
         <association property="resource" column="resource_code"
                      javaType="com.galaxy.framework.aquarius.entity.Resource">
-            <id column="resource_code" property="code" jdbcType="BIGINT"/>
+            <id column="resource_code" property="code" jdbcType="VARCHAR"/>
             <result column="resource_name" property="name" jdbcType="VARCHAR"/>
         </association>
     </resultMap>
