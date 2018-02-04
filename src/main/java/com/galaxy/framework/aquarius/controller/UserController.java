@@ -7,6 +7,8 @@ import com.galaxy.framework.aquarius.service.UserService;
 import com.galaxy.framework.pisces.exception.db.NotExistException;
 import com.galaxy.framework.pisces.exception.rule.EmptyException;
 import com.galaxy.framework.pisces.util.FileUtil;
+import com.galaxy.framework.pisces.vo.aquarius.DepartmentVo;
+import com.galaxy.framework.pisces.vo.aquarius.PositionVo;
 import com.galaxy.framework.pisces.vo.aquarius.UserVo;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
@@ -51,8 +53,22 @@ public class UserController {
     public UserVo getByCode(String code) {
         User user = userService.selectByCode(code);
         UserVo userVo = new UserVo();
-        userVo.setCode(user.getCode());
-        userVo.setName(user.getName());
+        if (user != null) {
+            userVo.setCode(user.getCode());
+            userVo.setName(user.getName());
+            if (user.getDepartment() != null) {
+                DepartmentVo departmentVo = new DepartmentVo();
+                departmentVo.setCode(user.getDepartmentCode());
+                departmentVo.setName(user.getDepartment().getName());
+                userVo.setDepartmentVo(departmentVo);
+            }
+            if (user.getPosition() != null) {
+                PositionVo positionVo = new PositionVo();
+                positionVo.setCode(user.getPositionCode());
+                positionVo.setName(user.getPosition().getName());
+                userVo.setPositionVo(positionVo);
+            }
+        }
         return userVo;
     }
 
