@@ -57,16 +57,12 @@ public class UserController {
             userVo.setCode(user.getCode());
             userVo.setName(user.getName());
             if (user.getDepartment() != null) {
-                DepartmentVo departmentVo = new DepartmentVo();
-                departmentVo.setCode(user.getDepartmentCode());
-                departmentVo.setName(user.getDepartment().getName());
-                userVo.setDepartmentVo(departmentVo);
+                userVo.setDepartmentCode(user.getDepartment().getCode());
+                userVo.setDepartmentName(user.getDepartment().getName());
             }
             if (user.getPosition() != null) {
-                PositionVo positionVo = new PositionVo();
-                positionVo.setCode(user.getPositionCode());
-                positionVo.setName(user.getPosition().getName());
-                userVo.setPositionVo(positionVo);
+                userVo.setPositionCode(user.getPosition().getCode());
+                userVo.setPositionName(user.getPosition().getName());
             }
         }
         return userVo;
@@ -90,7 +86,7 @@ public class UserController {
         } else if (StringUtils.isEmpty(code)) {
             throw new EmptyException("图片所属人为空");
         } else {
-            String flieName = FileUtil.writeFromBase64(headImg, code);
+            String flieName = FileUtil.writeFromBase64(headImg, "system/user", code);
             User user = userService.selectByCode(code);
             user.setHeadImg(flieName);
             userService.update(user);
